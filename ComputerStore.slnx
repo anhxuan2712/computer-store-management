@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ComputerStore.BLL/ComputerStore.BLL.csproj" />
+  <Project Path="ComputerStore.DAL/ComputerStore.DAL.csproj" />
+  <Project Path="ComputerStore.DTO/ComputerStore.DTO.csproj" />
+  <Project Path="ComputerStore.GUI/ComputerStore.GUI.csproj" />
+</Solution>
