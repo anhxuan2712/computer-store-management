@@ -1,9 +1,9 @@
--- =============================================================
--- ComputerStore - Schema MySQL 8.x (bản đề xuất)
--- LƯU Ý: Đây là bản nháp do Thành viên 3 tạo để chạy được chức năng
--- Khách hàng / Nhập hàng / Bán hàng. Cả nhóm cần review và thống nhất
--- trước khi coi đây là schema chính.
--- =============================================================
+
+-- =====================================================
+-- COMPUTER STORE MANAGEMENT SYSTEM
+-- Database schema: ComputerStore
+-- MySQL Server 8.x
+-- =====================================================
 
 CREATE DATABASE IF NOT EXISTS ComputerStore
 CHARACTER SET utf8mb4
@@ -11,102 +11,261 @@ COLLATE utf8mb4_unicode_ci;
 
 USE ComputerStore;
 
+-- =====================================================
+-- 1. TABLE: NhanVien
+-- =====================================================
+
 CREATE TABLE IF NOT EXISTS NhanVien (
-    MaNhanVien   VARCHAR(10)  NOT NULL PRIMARY KEY,
-    HoTen        VARCHAR(100) NOT NULL,
-    GioiTinh     VARCHAR(5)   NULL,
-    NgaySinh     DATE         NULL,
-    SoDienThoai  VARCHAR(15)  NULL,
-    DiaChi       VARCHAR(255) NULL,
-    ChucVu       VARCHAR(50)  NULL
-);
+    MaNhanVien INT AUTO_INCREMENT PRIMARY KEY,
+    HoTen VARCHAR(100) NOT NULL,
+    GioiTinh ENUM('Nam', 'Nu', 'Khac') DEFAULT 'Khac',
+    NgaySinh DATE,
+    SoDienThoai VARCHAR(15) UNIQUE,
+    Email VARCHAR(100) UNIQUE,
+    DiaChi VARCHAR(255),
+    NgayVaoLam DATE,
+    TrangThai TINYINT NOT NULL DEFAULT 1,
+    NgayTao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_nhanvien_trangthai
+        CHECK (TrangThai IN (0, 1))
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 2. TABLE: TaiKhoan
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS TaiKhoan (
-    TenDangNhap  VARCHAR(50)  NOT NULL PRIMARY KEY,
-    MatKhau      VARCHAR(255) NOT NULL,
-    MaNhanVien   VARCHAR(10)  NOT NULL UNIQUE,
-    VaiTro       VARCHAR(20)  NOT NULL DEFAULT 'NhanVien',
-    CONSTRAINT FK_TaiKhoan_NhanVien FOREIGN KEY (MaNhanVien) REFERENCES NhanVien(MaNhanVien)
-);
+    MaTaiKhoan INT AUTO_INCREMENT PRIMARY KEY,
+    MaNhanVien INT NOT NULL UNIQUE,
+    TenDangNhap VARCHAR(50) NOT NULL UNIQUE,
+    MatKhau VARCHAR(255) NOT NULL,
+    VaiTro ENUM('Admin', 'NhanVien') NOT NULL DEFAULT 'NhanVien',
+    TrangThai TINYINT NOT NULL DEFAULT 1,
+    NgayTao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_taikhoan_nhanvien
+        FOREIGN KEY (MaNhanVien)
+        REFERENCES NhanVien(MaNhanVien)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_taikhoan_trangthai
+        CHECK (TrangThai IN (0, 1))
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 3. TABLE: KhachHang
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS KhachHang (
-    MaKhachHang  VARCHAR(10)  NOT NULL PRIMARY KEY,
-    TenKhachHang VARCHAR(100) NOT NULL,
-    SoDienThoai  VARCHAR(15)  NOT NULL UNIQUE,
-    DiaChi       VARCHAR(255) NULL,
-    Email        VARCHAR(100) NULL
-);
+    MaKhachHang INT AUTO_INCREMENT PRIMARY KEY,
+    HoTen VARCHAR(100) NOT NULL,
+    SoDienThoai VARCHAR(15) UNIQUE,
+    Email VARCHAR(100),
+    DiaChi VARCHAR(255),
+    NgayTao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 4. TABLE: DanhMuc
+-- Giữ nguyên 6 mã danh mục theo README
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS DanhMuc (
-    MaDanhMuc    VARCHAR(10)  NOT NULL PRIMARY KEY,
-    TenDanhMuc   VARCHAR(100) NOT NULL
-);
+    MaDanhMuc VARCHAR(10) PRIMARY KEY,
+    TenDanhMuc VARCHAR(100) NOT NULL UNIQUE,
+    MoTa VARCHAR(255)
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS SanPham (
-    MaSanPham    VARCHAR(10)   NOT NULL PRIMARY KEY,
-    TenSanPham   VARCHAR(200)  NOT NULL,
-    MaDanhMuc    VARCHAR(10)   NOT NULL,
-    ThuongHieu   VARCHAR(100)  NULL,
-    GiaNhap      DECIMAL(15,2) NOT NULL DEFAULT 0,
-    GiaBan       DECIMAL(15,2) NOT NULL DEFAULT 0,
-    SoLuongTon   INT           NOT NULL DEFAULT 0,
-    BaoHanh      INT           NULL COMMENT 'Số tháng bảo hành',
-    MoTa         TEXT          NULL,
-    CONSTRAINT FK_SanPham_DanhMuc FOREIGN KEY (MaDanhMuc) REFERENCES DanhMuc(MaDanhMuc),
-    CONSTRAINT CK_SanPham_SoLuongTon CHECK (SoLuongTon >= 0)
-);
+-- =====================================================
+-- 5. TABLE: NhaCungCap
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS NhaCungCap (
-    MaNhaCungCap  VARCHAR(10)  NOT NULL PRIMARY KEY,
-    TenNhaCungCap VARCHAR(200) NOT NULL,
-    SoDienThoai   VARCHAR(15)  NULL,
-    DiaChi        VARCHAR(255) NULL,
-    Email         VARCHAR(100) NULL
-);
+    MaNhaCungCap INT AUTO_INCREMENT PRIMARY KEY,
+    TenNhaCungCap VARCHAR(150) NOT NULL,
+    SoDienThoai VARCHAR(15),
+    Email VARCHAR(100),
+    DiaChi VARCHAR(255),
+    TrangThai TINYINT NOT NULL DEFAULT 1,
+
+    CONSTRAINT chk_nhacungcap_trangthai
+        CHECK (TrangThai IN (0, 1))
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 6. TABLE: SanPham
+-- =====================================================
+
+CREATE TABLE IF NOT EXISTS SanPham (
+    MaSanPham INT AUTO_INCREMENT PRIMARY KEY,
+    TenSanPham VARCHAR(150) NOT NULL,
+    MaDanhMuc VARCHAR(10) NOT NULL,
+    DonViTinh VARCHAR(30) NOT NULL DEFAULT 'Cai',
+    GiaNhap DECIMAL(15,2) NOT NULL DEFAULT 0,
+    GiaBan DECIMAL(15,2) NOT NULL DEFAULT 0,
+    SoLuongTon INT NOT NULL DEFAULT 0,
+    MoTa TEXT,
+    TrangThai TINYINT NOT NULL DEFAULT 1,
+    NgayTao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_sanpham_danhmuc
+        FOREIGN KEY (MaDanhMuc)
+        REFERENCES DanhMuc(MaDanhMuc)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_sanpham_gianhap
+        CHECK (GiaNhap >= 0),
+
+    CONSTRAINT chk_sanpham_giaban
+        CHECK (GiaBan >= 0),
+
+    CONSTRAINT chk_sanpham_soluong
+        CHECK (SoLuongTon >= 0),
+
+    CONSTRAINT chk_sanpham_trangthai
+        CHECK (TrangThai IN (0, 1)),
+
+    INDEX idx_sanpham_ten (TenSanPham),
+    INDEX idx_sanpham_danhmuc (MaDanhMuc)
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 7. TABLE: PhieuNhap
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS PhieuNhap (
-    MaPhieuNhap  VARCHAR(10)   NOT NULL PRIMARY KEY,
-    NgayNhap     DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    MaNhaCungCap VARCHAR(10)   NOT NULL,
-    MaNhanVien   VARCHAR(10)   NOT NULL,
-    TongTien     DECIMAL(15,2) NOT NULL DEFAULT 0,
-    GhiChu       VARCHAR(255)  NULL,
-    CONSTRAINT FK_PhieuNhap_NhaCungCap FOREIGN KEY (MaNhaCungCap) REFERENCES NhaCungCap(MaNhaCungCap),
-    CONSTRAINT FK_PhieuNhap_NhanVien FOREIGN KEY (MaNhanVien) REFERENCES NhanVien(MaNhanVien)
-);
+    MaPhieuNhap INT AUTO_INCREMENT PRIMARY KEY,
+    MaNhaCungCap INT NOT NULL,
+    MaNhanVien INT NOT NULL,
+    NgayNhap DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    TongTien DECIMAL(15,2) NOT NULL DEFAULT 0,
+    TrangThai ENUM('ChoXacNhan', 'DaXacNhan', 'DaHuy')
+        NOT NULL DEFAULT 'ChoXacNhan',
+    GhiChu VARCHAR(255),
+
+    CONSTRAINT fk_phieunhap_nhacungcap
+        FOREIGN KEY (MaNhaCungCap)
+        REFERENCES NhaCungCap(MaNhaCungCap)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_phieunhap_nhanvien
+        FOREIGN KEY (MaNhanVien)
+        REFERENCES NhanVien(MaNhanVien)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_phieunhap_tongtien
+        CHECK (TongTien >= 0),
+
+    INDEX idx_phieunhap_ngay (NgayNhap)
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 8. TABLE: ChiTietPhieuNhap
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS ChiTietPhieuNhap (
-    MaPhieuNhap  VARCHAR(10)   NOT NULL,
-    MaSanPham    VARCHAR(10)   NOT NULL,
-    SoLuong      INT           NOT NULL,
-    DonGiaNhap   DECIMAL(15,2) NOT NULL,
-    ThanhTien    DECIMAL(15,2) NOT NULL,
-    PRIMARY KEY (MaPhieuNhap, MaSanPham),
-    CONSTRAINT FK_CTPN_PhieuNhap FOREIGN KEY (MaPhieuNhap) REFERENCES PhieuNhap(MaPhieuNhap),
-    CONSTRAINT FK_CTPN_SanPham FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSanPham),
-    CONSTRAINT CK_CTPN_SoLuong CHECK (SoLuong > 0)
-);
+    MaChiTietPhieuNhap INT AUTO_INCREMENT PRIMARY KEY,
+    MaPhieuNhap INT NOT NULL,
+    MaSanPham INT NOT NULL,
+    SoLuong INT NOT NULL,
+    DonGiaNhap DECIMAL(15,2) NOT NULL,
+    ThanhTien DECIMAL(15,2)
+        GENERATED ALWAYS AS (SoLuong * DonGiaNhap) STORED,
+
+    CONSTRAINT fk_ctphieunhap_phieunhap
+        FOREIGN KEY (MaPhieuNhap)
+        REFERENCES PhieuNhap(MaPhieuNhap)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_ctphieunhap_sanpham
+        FOREIGN KEY (MaSanPham)
+        REFERENCES SanPham(MaSanPham)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT uq_ctphieunhap_sanpham
+        UNIQUE (MaPhieuNhap, MaSanPham),
+
+    CONSTRAINT chk_ctphieunhap_soluong
+        CHECK (SoLuong > 0),
+
+    CONSTRAINT chk_ctphieunhap_dongia
+        CHECK (DonGiaNhap >= 0)
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 9. TABLE: HoaDon
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS HoaDon (
-    MaHoaDon     VARCHAR(10)   NOT NULL PRIMARY KEY,
-    NgayLap      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    MaKhachHang  VARCHAR(10)   NULL COMMENT 'NULL = khách lẻ',
-    MaNhanVien   VARCHAR(10)   NOT NULL,
-    TongTien     DECIMAL(15,2) NOT NULL DEFAULT 0,
-    TienKhachDua DECIMAL(15,2) NOT NULL DEFAULT 0,
-    GhiChu       VARCHAR(255)  NULL,
-    CONSTRAINT FK_HoaDon_KhachHang FOREIGN KEY (MaKhachHang) REFERENCES KhachHang(MaKhachHang),
-    CONSTRAINT FK_HoaDon_NhanVien FOREIGN KEY (MaNhanVien) REFERENCES NhanVien(MaNhanVien)
-);
+    MaHoaDon INT AUTO_INCREMENT PRIMARY KEY,
+    MaKhachHang INT NULL,
+    MaNhanVien INT NOT NULL,
+    NgayLap DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    TongTien DECIMAL(15,2) NOT NULL DEFAULT 0,
+    TrangThai ENUM('ChoThanhToan', 'DaThanhToan', 'DaHuy')
+        NOT NULL DEFAULT 'ChoThanhToan',
+    GhiChu VARCHAR(255),
+
+    CONSTRAINT fk_hoadon_khachhang
+        FOREIGN KEY (MaKhachHang)
+        REFERENCES KhachHang(MaKhachHang)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_hoadon_nhanvien
+        FOREIGN KEY (MaNhanVien)
+        REFERENCES NhanVien(MaNhanVien)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT chk_hoadon_tongtien
+        CHECK (TongTien >= 0),
+
+    INDEX idx_hoadon_ngay (NgayLap)
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- 10. TABLE: ChiTietHoaDon
+-- =====================================================
 
 CREATE TABLE IF NOT EXISTS ChiTietHoaDon (
-    MaHoaDon     VARCHAR(10)   NOT NULL,
-    MaSanPham    VARCHAR(10)   NOT NULL,
-    SoLuong      INT           NOT NULL,
-    DonGiaBan    DECIMAL(15,2) NOT NULL,
-    ThanhTien    DECIMAL(15,2) NOT NULL,
-    PRIMARY KEY (MaHoaDon, MaSanPham),
-    CONSTRAINT FK_CTHD_HoaDon FOREIGN KEY (MaHoaDon) REFERENCES HoaDon(MaHoaDon),
-    CONSTRAINT FK_CTHD_SanPham FOREIGN KEY (MaSanPham) REFERENCES SanPham(MaSanPham),
-    CONSTRAINT CK_CTHD_SoLuong CHECK (SoLuong > 0)
-);
+    MaChiTietHoaDon INT AUTO_INCREMENT PRIMARY KEY,
+    MaHoaDon INT NOT NULL,
+    MaSanPham INT NOT NULL,
+    SoLuong INT NOT NULL,
+    DonGiaBan DECIMAL(15,2) NOT NULL,
+    ThanhTien DECIMAL(15,2)
+        GENERATED ALWAYS AS (SoLuong * DonGiaBan) STORED,
+
+    CONSTRAINT fk_cthoadon_hoadon
+        FOREIGN KEY (MaHoaDon)
+        REFERENCES HoaDon(MaHoaDon)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_cthoadon_sanpham
+        FOREIGN KEY (MaSanPham)
+        REFERENCES SanPham(MaSanPham)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT,
+
+    CONSTRAINT uq_cthoadon_sanpham
+        UNIQUE (MaHoaDon, MaSanPham),
+
+    CONSTRAINT chk_cthoadon_soluong
+        CHECK (SoLuong > 0),
+
+    CONSTRAINT chk_cthoadon_dongia
+        CHECK (DonGiaBan >= 0)
+) ENGINE=InnoDB;
+
+-- =====================================================
+-- END OF DATABASE SCHEMA
+-- =====================================================

@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Database/">
+    <File Path="Database/ComputerStore.sql" />
+    <File Path="Database/SampleData.sql" />
+  </Folder>
   <Project Path="ComputerStore.BLL/ComputerStore.BLL.csproj" />
   <Project Path="ComputerStore.DAL/ComputerStore.DAL.csproj" />
   <Project Path="ComputerStore.DTO/ComputerStore.DTO.csproj" />
