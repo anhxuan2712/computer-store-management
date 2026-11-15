@@ -1,4 +1,4 @@
-namespace ComputerStore.GUI.Forms
+namespace ComputerStore.GUI.Forms.Transactions
 {
     partial class FrmNhapHang
     {

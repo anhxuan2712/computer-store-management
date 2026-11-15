@@ -1,22 +1,22 @@
 using System.ComponentModel;
 using System.Data;
-using ComputerStore.BLL;
-using ComputerStore.DTO;
+using ComputerStore.BLL.Services;
+using ComputerStore.DTO.Models;
 
-namespace ComputerStore.GUI.Forms
+namespace ComputerStore.GUI.Forms.Transactions
 {
     public partial class FrmNhapHang : Form
     {
         private readonly NhapHangBLL bll = new NhapHangBLL();
-        private readonly BindingList<ChiTietPhieuNhapDTO> chiTiet = new BindingList<ChiTietPhieuNhapDTO>();
+        private readonly BindingList<DongChiTietModel> chiTiet = new BindingList<DongChiTietModel>();
 
         /// <summary>
         /// Mã nhân viên lập phiếu. FrmMain/FrmLogin gán giá trị này theo tài khoản đăng nhập.
-        /// Mặc định NV001 (dữ liệu mẫu) để chạy thử độc lập.
+        /// Mặc định 1 (nhân viên đầu tiên trong dữ liệu mẫu) để chạy thử độc lập.
         /// </summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string MaNhanVien { get; set; } = "NV001";
+        public int MaNhanVien { get; set; } = 1;
 
         public FrmNhapHang()
         {
@@ -29,7 +29,7 @@ namespace ComputerStore.GUI.Forms
             dgvChiTiet.Columns.Add(CreateColumn("MaSanPham", "Mã SP", 15));
             dgvChiTiet.Columns.Add(CreateColumn("TenSanPham", "Tên sản phẩm", 40));
             dgvChiTiet.Columns.Add(CreateColumn("SoLuong", "Số lượng", 12));
-            dgvChiTiet.Columns.Add(CreateColumn("DonGiaNhap", "Đơn giá nhập", 16, "N0"));
+            dgvChiTiet.Columns.Add(CreateColumn("DonGia", "Đơn giá nhập", 16, "N0"));
             dgvChiTiet.Columns.Add(CreateColumn("ThanhTien", "Thành tiền", 17, "N0"));
             dgvChiTiet.DataSource = chiTiet;
 
@@ -95,7 +95,7 @@ namespace ComputerStore.GUI.Forms
                 return;
             }
 
-            if (!bll.ThemChiTiet(chiTiet, row["MaSanPham"].ToString()!, row["TenSanPham"].ToString()!,
+            if (!bll.ThemChiTiet(chiTiet, Convert.ToInt32(row["MaSanPham"]), row["TenSanPham"].ToString()!,
                     (int)numSoLuong.Value, numDonGia.Value, out string message))
             {
                 ShowWarning(message);
@@ -109,7 +109,7 @@ namespace ComputerStore.GUI.Forms
 
         private void btnXoaSP_Click(object? sender, EventArgs e)
         {
-            if (dgvChiTiet.CurrentRow?.DataBoundItem is ChiTietPhieuNhapDTO item)
+            if (dgvChiTiet.CurrentRow?.DataBoundItem is DongChiTietModel item)
             {
                 chiTiet.Remove(item);
                 CapNhatTongTien();
@@ -123,26 +123,19 @@ namespace ComputerStore.GUI.Forms
                 ShowWarning("Phiếu nhập chưa có sản phẩm nào.");
                 return;
             }
-            if (cboNhaCungCap.SelectedValue is not string maNcc)
+            if (cboNhaCungCap.SelectedValue == null || cboNhaCungCap.SelectedIndex < 0)
             {
                 ShowWarning("Vui lòng chọn nhà cung cấp.");
                 return;
             }
 
+            int maNhaCungCap = Convert.ToInt32(cboNhaCungCap.SelectedValue);
             decimal tong = bll.TinhTongTien(chiTiet);
             if (MessageBox.Show($"Xác nhận nhập {chiTiet.Count} sản phẩm, tổng tiền {tong:N0} đ?",
                     "Xác nhận phiếu nhập", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
-            var phieu = new PhieuNhapDTO
-            {
-                MaNhaCungCap = maNcc,
-                MaNhanVien = MaNhanVien,
-                GhiChu = txtGhiChu.Text,
-                ChiTiet = chiTiet.ToList()
-            };
-
-            if (bll.XacNhanNhap(phieu, out string message))
+            if (bll.XacNhanNhap(maNhaCungCap, MaNhanVien, txtGhiChu.Text, chiTiet, out string message))
             {
                 MessageBox.Show(message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ResetPhieu();

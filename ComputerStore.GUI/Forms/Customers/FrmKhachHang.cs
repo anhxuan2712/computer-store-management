@@ -1,7 +1,7 @@
-using ComputerStore.BLL;
-using ComputerStore.DTO;
+using ComputerStore.BLL.Services;
+using ComputerStore.DTO.Entities;
 
-namespace ComputerStore.GUI.Forms
+namespace ComputerStore.GUI.Forms.Customers
 {
     public partial class FrmKhachHang : Form
     {
@@ -24,10 +24,11 @@ namespace ComputerStore.GUI.Forms
             {
                 dgvKhachHang.DataSource = bll.Search(keyword);
                 SetHeader("MaKhachHang", "Mã KH");
-                SetHeader("TenKhachHang", "Tên khách hàng");
+                SetHeader("HoTen", "Tên khách hàng");
                 SetHeader("SoDienThoai", "Số điện thoại");
-                SetHeader("DiaChi", "Địa chỉ");
                 SetHeader("Email", "Email");
+                SetHeader("DiaChi", "Địa chỉ");
+                SetHeader("NgayTao", "Ngày tạo");
                 dgvKhachHang.ClearSelection();
             }
             catch (Exception ex)
@@ -43,8 +44,8 @@ namespace ComputerStore.GUI.Forms
 
         private KhachHangDTO ReadInputs() => new KhachHangDTO
         {
-            MaKhachHang = txtMa.Text,
-            TenKhachHang = txtTen.Text,
+            MaKhachHang = int.TryParse(txtMa.Text, out int ma) ? ma : 0,
+            HoTen = txtTen.Text,
             SoDienThoai = txtSdt.Text,
             DiaChi = txtDiaChi.Text,
             Email = txtEmail.Text
@@ -69,8 +70,8 @@ namespace ComputerStore.GUI.Forms
             if (dgvKhachHang.CurrentRow?.DataBoundItem is not KhachHangDTO kh || !dgvKhachHang.CurrentRow.Selected)
                 return;
 
-            txtMa.Text = kh.MaKhachHang;
-            txtTen.Text = kh.TenKhachHang;
+            txtMa.Text = kh.MaKhachHang.ToString();
+            txtTen.Text = kh.HoTen;
             txtSdt.Text = kh.SoDienThoai;
             txtDiaChi.Text = kh.DiaChi;
             txtEmail.Text = kh.Email;
@@ -84,7 +85,7 @@ namespace ComputerStore.GUI.Forms
             Execute(() =>
             {
                 var kh = ReadInputs();
-                kh.MaKhachHang = string.Empty;
+                kh.MaKhachHang = 0;
                 return (bll.Insert(kh, out string msg), msg);
             });
         }
@@ -96,12 +97,12 @@ namespace ComputerStore.GUI.Forms
 
         private void btnXoa_Click(object? sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtMa.Text)) return;
-            if (MessageBox.Show($"Xóa khách hàng {txtMa.Text} - {txtTen.Text}?", "Xác nhận xóa",
+            if (!int.TryParse(txtMa.Text, out int maKhachHang)) return;
+            if (MessageBox.Show($"Xóa khách hàng {maKhachHang} - {txtTen.Text}?", "Xác nhận xóa",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
-            Execute(() => (bll.Delete(txtMa.Text, out string msg), msg));
+            Execute(() => (bll.Delete(maKhachHang, out string msg), msg));
         }
 
         private void btnLamMoi_Click(object? sender, EventArgs e)

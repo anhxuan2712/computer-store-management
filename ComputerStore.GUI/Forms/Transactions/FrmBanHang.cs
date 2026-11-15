@@ -1,22 +1,23 @@
 using System.ComponentModel;
 using System.Data;
-using ComputerStore.BLL;
-using ComputerStore.DTO;
+using ComputerStore.BLL.Services;
+using ComputerStore.DTO.Models;
+using ComputerStore.GUI.Forms.Customers;
 
-namespace ComputerStore.GUI.Forms
+namespace ComputerStore.GUI.Forms.Transactions
 {
     public partial class FrmBanHang : Form
     {
         private readonly BanHangBLL bll = new BanHangBLL();
-        private readonly BindingList<ChiTietHoaDonDTO> gioHang = new BindingList<ChiTietHoaDonDTO>();
+        private readonly BindingList<DongChiTietModel> gioHang = new BindingList<DongChiTietModel>();
 
         /// <summary>
         /// Mã nhân viên bán hàng. FrmMain/FrmLogin gán giá trị này theo tài khoản đăng nhập.
-        /// Mặc định NV001 (dữ liệu mẫu) để chạy thử độc lập.
+        /// Mặc định 1 (nhân viên đầu tiên trong dữ liệu mẫu) để chạy thử độc lập.
         /// </summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string MaNhanVien { get; set; } = "NV001";
+        public int MaNhanVien { get; set; } = 1;
 
         public FrmBanHang()
         {
@@ -29,7 +30,7 @@ namespace ComputerStore.GUI.Forms
             dgvGioHang.Columns.Add(CreateColumn("MaSanPham", "Mã SP", 15));
             dgvGioHang.Columns.Add(CreateColumn("TenSanPham", "Tên sản phẩm", 40));
             dgvGioHang.Columns.Add(CreateColumn("SoLuong", "Số lượng", 12));
-            dgvGioHang.Columns.Add(CreateColumn("DonGiaBan", "Đơn giá", 16, "N0"));
+            dgvGioHang.Columns.Add(CreateColumn("DonGia", "Đơn giá", 16, "N0"));
             dgvGioHang.Columns.Add(CreateColumn("ThanhTien", "Thành tiền", 17, "N0"));
             dgvGioHang.DataSource = gioHang;
 
@@ -54,20 +55,27 @@ namespace ComputerStore.GUI.Forms
             return col;
         }
 
-        private void LoadKhachHang(string? chonMaKhachHang = null)
+        /// <summary>Mã khách hàng đang chọn; null nếu là khách lẻ.</summary>
+        private int? MaKhachHangDangChon()
+        {
+            int ma = cboKhachHang.SelectedValue == null ? 0 : Convert.ToInt32(cboKhachHang.SelectedValue);
+            return ma > 0 ? ma : null;
+        }
+
+        private void LoadKhachHang(int? chonMaKhachHang = null)
         {
             try
             {
                 DataTable table = bll.GetKhachHang();
                 DataRow khachLe = table.NewRow();
-                khachLe["MaKhachHang"] = string.Empty;
+                khachLe["MaKhachHang"] = 0; // 0 = khách lẻ
                 khachLe["HienThi"] = "-- Khách lẻ --";
                 table.Rows.InsertAt(khachLe, 0);
 
                 cboKhachHang.DisplayMember = "HienThi";
                 cboKhachHang.ValueMember = "MaKhachHang";
                 cboKhachHang.DataSource = table;
-                if (chonMaKhachHang != null) cboKhachHang.SelectedValue = chonMaKhachHang;
+                if (chonMaKhachHang != null) cboKhachHang.SelectedValue = chonMaKhachHang.Value;
                 else cboKhachHang.SelectedIndex = 0;
             }
             catch (Exception ex)
@@ -107,11 +115,11 @@ namespace ComputerStore.GUI.Forms
 
         private void btnThemKhachHang_Click(object? sender, EventArgs e)
         {
+            int? dangChon = MaKhachHangDangChon();
             using (var frm = new FrmKhachHang())
             {
                 frm.ShowDialog(this);
             }
-            string? dangChon = cboKhachHang.SelectedValue as string;
             LoadKhachHang(dangChon);
         }
 
@@ -125,7 +133,7 @@ namespace ComputerStore.GUI.Forms
 
             try
             {
-                if (!bll.ThemVaoGio(gioHang, row["MaSanPham"].ToString()!, row["TenSanPham"].ToString()!,
+                if (!bll.ThemVaoGio(gioHang, Convert.ToInt32(row["MaSanPham"]), row["TenSanPham"].ToString()!,
                         (int)numSoLuong.Value, Convert.ToDecimal(row["GiaBan"]), out string message))
                 {
                     ShowWarning(message);
@@ -145,7 +153,7 @@ namespace ComputerStore.GUI.Forms
 
         private void btnXoaKhoiGio_Click(object? sender, EventArgs e)
         {
-            if (dgvGioHang.CurrentRow?.DataBoundItem is ChiTietHoaDonDTO item)
+            if (dgvGioHang.CurrentRow?.DataBoundItem is DongChiTietModel item)
             {
                 gioHang.Remove(item);
                 CapNhatTongTien();
@@ -167,16 +175,8 @@ namespace ComputerStore.GUI.Forms
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
-            var hoaDon = new HoaDonDTO
-            {
-                MaKhachHang = cboKhachHang.SelectedValue as string,
-                MaNhanVien = MaNhanVien,
-                TienKhachDua = numTienKhachDua.Value,
-                GhiChu = txtGhiChu.Text,
-                ChiTiet = gioHang.ToList()
-            };
-
-            if (bll.ThanhToan(hoaDon, out string message))
+            if (bll.ThanhToan(MaKhachHangDangChon(), MaNhanVien, numTienKhachDua.Value, txtGhiChu.Text,
+                    gioHang, out string message))
             {
                 MessageBox.Show(message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ResetHoaDon();

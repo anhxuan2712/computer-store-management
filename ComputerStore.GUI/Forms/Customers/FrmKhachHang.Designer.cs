@@ -1,4 +1,4 @@
-namespace ComputerStore.GUI.Forms
+namespace ComputerStore.GUI.Forms.Customers
 {
     partial class FrmKhachHang
     {
