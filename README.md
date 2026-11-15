@@ -94,21 +94,39 @@ ComputerStore/
 ├── ComputerStore.GUI/
 │   ├── Forms/
 │   │   ├── Authentication/
-│   │   │   └── FrmLogin.cs
+│   │   │   ├── FrmLogin.cs
+│   │   │   ├── FrmLogin.Designer.cs
+│   │   │   └── FrmLogin.resx
 │   │   ├── Main/
-│   │   │   └── FrmMain.cs
+│   │   │   ├── FrmMain.cs
+│   │   │   ├── FrmMain.Designer.cs
+│   │   │   └── FrmMain.resx
 │   │   ├── Employees/
-│   │   │   └── FrmNhanVien.cs
+│   │   │   ├── FrmNhanVien.cs
+│   │   │   ├── FrmNhanVien.Designer.cs
+│   │   │   └── FrmNhanVien.resx
 │   │   ├── Products/
 │   │   │   ├── FrmSanPham.cs
-│   │   │   └── FrmDanhMuc.cs
+│   │   │   ├── FrmSanPham.Designer.cs
+│   │   │   ├── FrmSanPham.resx
+│   │   │   ├── FrmDanhMuc.cs
+│   │   │   ├── FrmDanhMuc.Designer.cs
+│   │   │   └── FrmDanhMuc.resx
 │   │   ├── Suppliers/
-│   │   │   └── FrmNhaCungCap.cs
+│   │   │   ├── FrmNhaCungCap.cs
+│   │   │   ├── FrmNhaCungCap.Designer.cs
+│   │   │   └── FrmNhaCungCap.resx
 │   │   ├── Customers/
-│   │   │   └── FrmKhachHang.cs
+│   │   │   ├── FrmKhachHang.cs
+│   │   │   ├── FrmKhachHang.Designer.cs
+│   │   │   └── FrmKhachHang.resx
 │   │   └── Transactions/
 │   │       ├── FrmNhapHang.cs
-│   │       └── FrmBanHang.cs
+│   │       ├── FrmNhapHang.Designer.cs
+│   │       ├── FrmNhapHang.resx
+│   │       ├── FrmBanHang.cs
+│   │       ├── FrmBanHang.Designer.cs
+│   │       └── FrmBanHang.resx
 │   ├── Helpers/
 │   ├── Resources/
 │   └── Program.cs
@@ -165,6 +183,19 @@ ComputerStore/
 │
 └── README.md
 ```
+
+Mỗi Form gồm 3 file nằm cùng thư mục:
+
+  File                   Nội dung
+  ---------------------- -----------------------------------------------
+  `FrmXxx.cs`            Code xử lý sự kiện, gọi BLL
+  `FrmXxx.Designer.cs`   Code giao diện do Visual Studio sinh khi kéo
+                         thả control; không sửa tay
+  `FrmXxx.resx`          Tài nguyên của Form (ảnh, icon...)
+
+Trong Solution Explorer, `.Designer.cs` và `.resx` được gộp bên dưới
+`FrmXxx.cs` (bấm mũi tên ▸ để xem). Khi di chuyển Form sang thư mục khác
+phải chuyển cả 3 file và sửa namespace ở cả `.cs` lẫn `.Designer.cs`.
 
 Không cần tạo tất cả file rỗng ngay lập tức. Khi thêm file mới, đặt đúng
 thư mục ở trên và dùng namespace theo thư mục:
