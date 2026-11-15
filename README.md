@@ -31,15 +31,15 @@ hợp và kiểm thử đúng hạn.
   --------------------- -------------------------------------
   Ngôn ngữ              C#
   Giao diện             Windows Forms (WinForms)
-  Nền tảng              .NET (phiên bản do nhóm thống nhất)
+  Nền tảng              .NET 10 (`net10.0`, GUI dùng `net10.0-windows`)
   Cơ sở dữ liệu         MySQL Server 8.x
   Công cụ quản trị DB   MySQL Workbench
   Kết nối DB            ADO.NET, NuGet `MySql.Data`
-  IDE                   Visual Studio Community
+  IDE                   Visual Studio Community (bản hỗ trợ .NET 10)
   Quản lý mã nguồn      Git và GitHub
 
-Tất cả thành viên nên dùng cùng phiên bản Visual Studio/.NET phù hợp với
-Solution để tránh lỗi tương thích.
+Tất cả thành viên dùng cùng .NET 10 SDK và phiên bản Visual Studio mở
+được file `ComputerStore.slnx` để tránh lỗi tương thích.
 
 ## 3. Phạm vi chức năng và phân công
 
@@ -84,66 +84,81 @@ một danh mục. Một danh mục có thể có nhiều sản phẩm.
 
 ## 5. Cấu trúc Solution và thư mục
 
-Cấu trúc mục tiêu:
+Cấu trúc mục tiêu (thư mục đã có sẵn trong repository, file Form/BLL/DAL
+được bổ sung dần khi từng thành viên hoàn thành chức năng):
 
 ``` text
 ComputerStore/
-├── ComputerStore.sln
+├── ComputerStore.slnx
 │
 ├── ComputerStore.GUI/
 │   ├── Forms/
-│   │   ├── FrmLogin.cs
-│   │   ├── FrmMain.cs
-│   │   ├── FrmNhanVien.cs
-│   │   ├── FrmSanPham.cs
-│   │   ├── FrmDanhMuc.cs
-│   │   ├── FrmNhaCungCap.cs
-│   │   ├── FrmKhachHang.cs
-│   │   ├── FrmNhapHang.cs
-│   │   └── FrmBanHang.cs
+│   │   ├── Authentication/
+│   │   │   └── FrmLogin.cs
+│   │   ├── Main/
+│   │   │   └── FrmMain.cs
+│   │   ├── Employees/
+│   │   │   └── FrmNhanVien.cs
+│   │   ├── Products/
+│   │   │   ├── FrmSanPham.cs
+│   │   │   └── FrmDanhMuc.cs
+│   │   ├── Suppliers/
+│   │   │   └── FrmNhaCungCap.cs
+│   │   ├── Customers/
+│   │   │   └── FrmKhachHang.cs
+│   │   └── Transactions/
+│   │       ├── FrmNhapHang.cs
+│   │       └── FrmBanHang.cs
 │   ├── Helpers/
-│   ├── Program.cs
-│   └── App.config                 # nếu project dùng .NET Framework
+│   ├── Resources/
+│   └── Program.cs
 │
 ├── ComputerStore.BLL/
-│   ├── TaiKhoanBLL.cs
-│   ├── NhanVienBLL.cs
-│   ├── SanPhamBLL.cs
-│   ├── DanhMucBLL.cs
-│   ├── NhaCungCapBLL.cs
-│   ├── KhachHangBLL.cs
-│   ├── NhapHangBLL.cs
-│   └── BanHangBLL.cs
+│   └── Services/
+│       ├── DatabaseService.cs       # kiểm tra kết nối DB khi khởi động
+│       ├── TaiKhoanBLL.cs
+│       ├── NhanVienBLL.cs
+│       ├── SanPhamBLL.cs
+│       ├── DanhMucBLL.cs
+│       ├── NhaCungCapBLL.cs
+│       ├── KhachHangBLL.cs
+│       ├── NhapHangBLL.cs
+│       └── BanHangBLL.cs
 │
 ├── ComputerStore.DAL/
 │   ├── Database/
 │   │   └── DbConnection.cs
-│   ├── TaiKhoanDAL.cs
-│   ├── NhanVienDAL.cs
-│   ├── SanPhamDAL.cs
-│   ├── DanhMucDAL.cs
-│   ├── NhaCungCapDAL.cs
-│   ├── KhachHangDAL.cs
-│   ├── NhapHangDAL.cs
-│   └── BanHangDAL.cs
+│   └── Repositories/
+│       ├── TaiKhoanDAL.cs
+│       ├── NhanVienDAL.cs
+│       ├── SanPhamDAL.cs
+│       ├── DanhMucDAL.cs
+│       ├── NhaCungCapDAL.cs
+│       ├── KhachHangDAL.cs
+│       ├── NhapHangDAL.cs
+│       └── BanHangDAL.cs
 │
 ├── ComputerStore.DTO/
-│   ├── TaiKhoanDTO.cs
-│   ├── NhanVienDTO.cs
-│   ├── SanPhamDTO.cs
-│   ├── DanhMucDTO.cs
-│   ├── NhaCungCapDTO.cs
-│   ├── KhachHangDTO.cs
-│   ├── PhieuNhapDTO.cs
-│   ├── ChiTietPhieuNhapDTO.cs
-│   ├── HoaDonDTO.cs
-│   └── ChiTietHoaDonDTO.cs
+│   ├── Entities/                    # mỗi lớp ứng với một bảng trong DB
+│   │   ├── TaiKhoanDTO.cs
+│   │   ├── NhanVienDTO.cs
+│   │   ├── SanPhamDTO.cs
+│   │   ├── DanhMucDTO.cs
+│   │   ├── NhaCungCapDTO.cs
+│   │   ├── KhachHangDTO.cs
+│   │   ├── PhieuNhapDTO.cs
+│   │   ├── ChiTietPhieuNhap.cs      # lớp ChiTietPhieuNhapDTO
+│   │   ├── HoaDonDTO.cs
+│   │   └── ChiTietHoaDon.cs         # lớp ChiTietHoaDonDTO
+│   └── Models/                      # lớp phục vụ hiển thị, không ứng với bảng
 │
 ├── Database/
-│   ├── ComputerStore.sql
-│   └── SampleData.sql
+│   ├── ComputerStore.sql            # schema chính
+│   ├── SampleData.sql               # dữ liệu mẫu
+│   ├── ComputerStore.mwb            # mô hình MySQL Workbench (ERD)
+│   └── ComputerStore-Database-README.md
 │
-├── Documents/
+├── Documents/                       # chưa tạo
 │   ├── ERD.png
 │   ├── PhanTichChucNang.docx
 │   └── PhanCongCongViec.docx
@@ -151,9 +166,19 @@ ComputerStore/
 └── README.md
 ```
 
-Đây là cấu trúc định hướng; không cần tạo tất cả file rỗng ngay lập tức.
-Khi tạo project, kiểm tra đúng loại project và phiên bản .NET mà nhóm đã
-chốt.
+Không cần tạo tất cả file rỗng ngay lập tức. Khi thêm file mới, đặt đúng
+thư mục ở trên và dùng namespace theo thư mục:
+
+  Thư mục                     Namespace
+  --------------------------- ------------------------------------------
+  `GUI/Forms/<Module>/`       `ComputerStore.GUI.Forms.<Module>`
+  `BLL/Services/`             `ComputerStore.BLL.Services`
+  `DAL/Repositories/`         `ComputerStore.DAL.Repositories`
+  `DAL/Database/`             `ComputerStore.DAL.Database`
+  `DTO/Entities/`             `ComputerStore.DTO.Entities`
+  `DTO/Models/`               `ComputerStore.DTO.Models`
+
+Project dùng .NET 10 (SDK-style) nên không có file `App.config`.
 
 ### Ý nghĩa các tầng
 
@@ -186,7 +211,11 @@ Cả nhóm sử dụng **một database MySQL có tên `ComputerStore`** với c
 một schema đã được thống nhất. Không tự tạo schema khác nhau cho từng
 thành viên.
 
-Các bảng dự kiến:
+Schema đã được chốt trong `Database/ComputerStore.sql` (mô hình tương
+ứng: `Database/ComputerStore.mwb`). Chi tiết cột, ràng buộc và quy tắc
+tồn kho xem tại `Database/ComputerStore-Database-README.md`.
+
+Các bảng:
 
 1.  `TaiKhoan`
 2.  `NhanVien`
@@ -206,27 +235,38 @@ Quan hệ nghiệp vụ chính:
 -   `ChiTietPhieuNhap` tham chiếu `PhieuNhap` và `SanPham`.
 -   `HoaDon` tham chiếu khách hàng và nhân viên bán hàng.
 -   `ChiTietHoaDon` tham chiếu `HoaDon` và `SanPham`.
--   `TaiKhoan` liên kết với nhân viên theo thiết kế database được nhóm
-    thống nhất.
+-   `TaiKhoan` liên kết một - một với `NhanVien`.
+
+Quy ước chung của schema:
+
+-   Khóa chính là `INT AUTO_INCREMENT` (riêng `DanhMuc.MaDanhMuc` là
+    `VARCHAR`, giá trị `DM01`...`DM06`). Khi thêm bản ghi, không tự sinh
+    mã mà lấy mã MySQL vừa tạo.
+-   `NhanVien`, `TaiKhoan`, `NhaCungCap`, `SanPham` có cột `TrangThai`
+    (1 = đang hoạt động, 0 = ngừng).
+-   `PhieuNhap.TrangThai`: `ChoXacNhan`, `DaXacNhan`, `DaHuy`.
+-   `HoaDon.TrangThai`: `ChoThanhToan`, `DaThanhToan`, `DaHuy`.
+-   `ThanhTien` trong `ChiTietPhieuNhap` và `ChiTietHoaDon` là cột do
+    MySQL tự tính (`SoLuong * DonGia`), không đưa vào câu `INSERT`.
+-   `HoaDon.MaKhachHang` cho phép `NULL` (khách lẻ).
 
 **Quy tắc quan trọng:** Một người được phân công quản lý file schema
 chính `Database/ComputerStore.sql`. Khi cần sửa bảng hoặc cột, phải trao
-đổi với cả nhóm, cập nhật file SQL và thông báo trước khi các thành viên
-cập nhật code.
+đổi với cả nhóm, cập nhật đồng thời `ComputerStore.sql`,
+`ComputerStore.mwb` và `ComputerStore-Database-README.md`, rồi thông báo
+trước khi các thành viên cập nhật code.
 
 ### Tạo database
 
-Mở MySQL Workbench và chạy:
+Mở MySQL Workbench và chạy lần lượt:
 
-``` sql
-CREATE DATABASE IF NOT EXISTS ComputerStore
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
-```
+1.  `Database/ComputerStore.sql`: tạo database `ComputerStore`
+    (`utf8mb4`, `utf8mb4_unicode_ci`) và 10 bảng.
+2.  `Database/SampleData.sql`: thêm dữ liệu mẫu.
 
-Sau khi nhóm hoàn thiện schema, import/chạy
-`Database/ComputerStore.sql`, sau đó chạy `Database/SampleData.sql` để
-tạo dữ liệu mẫu.
+Nếu máy đã có database `ComputerStore` tạo theo schema cũ, cần xóa
+database cũ trên máy mình rồi chạy lại hai file trên, vì script dùng
+`CREATE TABLE IF NOT EXISTS` nên không tự sửa bảng đã có.
 
 Không tự ý chạy script xóa dữ liệu trên database dùng chung. Khi thử
 nghiệm thao tác xóa hoặc nhập/bán hàng, nên dùng dữ liệu test đã thống
@@ -234,20 +274,31 @@ nhất.
 
 ### Kết nối MySQL
 
-Ví dụ connection string minh họa:
+Ứng dụng đọc tài khoản MySQL từ **biến môi trường**, không đọc từ file
+cấu hình (xem `ComputerStore.DAL/Database/DbConnection.cs`):
 
-``` text
-Server=localhost;Port=3306;Database=ComputerStore;Uid=app_user;Pwd=YOUR_PASSWORD;
+  Biến môi trường               Ý nghĩa
+  ----------------------------- ----------------------
+  `COMPUTERSTORE_DB_USER`       Tên tài khoản MySQL
+  `COMPUTERSTORE_DB_PASSWORD`   Mật khẩu tài khoản đó
+
+Đặt một lần trên mỗi máy bằng PowerShell (thay giá trị cho đúng máy
+mình):
+
+``` powershell
+setx COMPUTERSTORE_DB_USER "app_user"
+setx COMPUTERSTORE_DB_PASSWORD "YOUR_PASSWORD"
 ```
 
--   Nếu MySQL chạy trên chính máy thành viên: dùng `localhost`.
--   Nếu cả nhóm kết nối đến một máy chủ MySQL chung trong mạng LAN: thay
-    `localhost` bằng IP máy chủ.
+Sau đó **đóng và mở lại Visual Studio** để nhận biến mới. Nếu chưa đặt,
+ứng dụng báo lỗi "Chua cau hinh bien moi truong MySQL".
+
+-   Server (`localhost`), port (`3306`) và tên database (`ComputerStore`)
+    đang được đặt trong `DbConnection.cs`. Nếu cả nhóm dùng một máy chủ
+    MySQL chung trong mạng LAN, cần trao đổi với nhóm trước khi sửa.
 -   Tài khoản `app_user` và quyền truy cập phải được người quản trị
     database tạo/cấp.
--   Không commit mật khẩu thật vào Git. Dùng file cấu hình cục bộ không
-    đưa lên repository, hoặc cơ chế cấu hình an toàn phù hợp với loại
-    project.
+-   Không commit mật khẩu thật vào Git.
 
 Không mở cổng MySQL 3306 trực tiếp ra Internet. Nếu làm việc từ xa, dùng
 VPN hoặc môi trường máy chủ được bảo vệ.
@@ -264,7 +315,9 @@ VPN hoặc môi trường máy chủ được bảo vệ.
 6.  Lưu phiếu và chi tiết phiếu.
 7.  Cập nhật số lượng tồn kho.
 
-Chỉ cập nhật tồn kho khi phiếu nhập được xác nhận thành công.
+Chỉ cập nhật tồn kho khi phiếu nhập được xác nhận thành công. Phiếu chưa
+xác nhận có trạng thái `ChoXacNhan`; sau khi xác nhận và cộng tồn kho,
+trạng thái là `DaXacNhan`.
 
 ### Bán hàng
 
@@ -276,9 +329,13 @@ Chỉ cập nhật tồn kho khi phiếu nhập được xác nhận thành côn
 6.  Lưu hóa đơn và chi tiết hóa đơn.
 7.  Trừ tồn kho.
 
-Không cho phép bán số lượng lớn hơn tồn kho. Nên dùng transaction trong
-MySQL để lưu hóa đơn, chi tiết hóa đơn và cập nhật tồn kho như một giao
-dịch thống nhất; nếu có lỗi thì rollback.
+Không cho phép bán số lượng lớn hơn tồn kho. Hóa đơn chưa thanh toán có
+trạng thái `ChoThanhToan`; sau khi thanh toán và trừ tồn kho, trạng thái
+là `DaThanhToan`.
+
+Cả nhập hàng và bán hàng phải dùng transaction trong MySQL: lưu chứng
+từ, chi tiết và cập nhật tồn kho như một giao dịch thống nhất; nếu có lỗi
+thì rollback.
 
 ## 8. Quy ước Git và GitHub
 
@@ -300,7 +357,7 @@ main
 
 ``` bash
 git clone <GITHUB_REPOSITORY_URL>
-cd ComputerStore
+cd computer-store-management
 ```
 
 ### Tạo nhánh cá nhân
@@ -390,9 +447,11 @@ trong Panel nội dung) để giao diện toàn ứng dụng đồng nhất.
 ### Môi trường
 
 -   [ ] Cả 3 máy cài Visual Studio và workload .NET Desktop Development.
--   [ ] Cả nhóm thống nhất phiên bản .NET.
+-   [ ] Cả 3 máy cài .NET 10 SDK.
 -   [ ] MySQL Server và MySQL Workbench hoạt động.
--   [ ] Clone được repository và mở được `ComputerStore.sln`.
+-   [ ] Clone được repository và mở được `ComputerStore.slnx`.
+-   [ ] Đặt biến môi trường `COMPUTERSTORE_DB_USER`,
+    `COMPUTERSTORE_DB_PASSWORD`.
 -   [ ] Restore NuGet thành công.
 
 ### Database
@@ -427,17 +486,18 @@ trong Panel nội dung) để giao diện toàn ứng dụng đồng nhất.
     development**.
 2.  Cài MySQL Server và MySQL Workbench.
 3.  Clone repository về máy.
-4.  Mở `ComputerStore.sln` bằng Visual Studio.
+4.  Mở `ComputerStore.slnx` bằng Visual Studio.
 5.  Chạy script tạo database và dữ liệu mẫu theo hướng dẫn ở mục 6.
-6.  Cấu hình connection string cục bộ.
+6.  Đặt biến môi trường `COMPUTERSTORE_DB_USER` và
+    `COMPUTERSTORE_DB_PASSWORD` theo mục 6, rồi mở lại Visual Studio.
 7.  Restore NuGet packages.
 8.  Chọn `ComputerStore.GUI` làm Startup Project.
 9.  Build Solution.
 10. Nhấn `F5` để chạy ứng dụng.
 
-Nếu gặp lỗi, kiểm tra lần lượt: MySQL service đã chạy chưa,
-IP/port/database/tài khoản có đúng không, NuGet đã restore chưa, và
-Startup Project đã chọn đúng chưa.
+Nếu gặp lỗi, kiểm tra lần lượt: MySQL service đã chạy chưa, đã đặt hai
+biến môi trường và mở lại Visual Studio chưa, database/tài khoản có đúng
+không, NuGet đã restore chưa, và Startup Project đã chọn đúng chưa.
 
 ------------------------------------------------------------------------
 
