@@ -11,15 +11,17 @@ namespace ComputerStore.DAL.Database
 
         private static string BuildConnectionString()
         {
-            string password =
-                Environment.GetEnvironmentVariable(
-                    "COMPUTERSTORE_DB_PASSWORD"
-                );
+            string user = Environment.GetEnvironmentVariable(
+                "COMPUTERSTORE_DB_USER");
 
-            if (string.IsNullOrWhiteSpace(password))
+            string password = Environment.GetEnvironmentVariable(
+                "COMPUTERSTORE_DB_PASSWORD");
+
+            if (string.IsNullOrWhiteSpace(user) ||
+                string.IsNullOrWhiteSpace(password))
             {
                 throw new InvalidOperationException(
-                    "Chưa cấu hình biến môi trường COMPUTERSTORE_DB_PASSWORD."
+                    "Chua cau hinh bien moi truong MySQL."
                 );
             }
 
@@ -28,7 +30,7 @@ namespace ComputerStore.DAL.Database
                 Server = "localhost",
                 Port = 3306,
                 Database = "ComputerStore",
-                UserID = "root",
+                UserID = user,
                 Password = password,
                 CharacterSet = "utf8mb4"
             };
@@ -48,13 +50,13 @@ namespace ComputerStore.DAL.Database
                 using (var connection = GetConnection())
                 {
                     connection.Open();
-                    message = "Kết nối MySQL thành công!";
+                    message = "Ket noi MySQL thanh cong!";
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                message = "Kết nối MySQL thất bại: " + ex.Message;
+                message = "Ket noi MySQL that bai: " + ex.Message;
                 return false;
             }
         }
