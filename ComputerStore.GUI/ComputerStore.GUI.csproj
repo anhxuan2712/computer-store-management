@@ -14,9 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Forms\Products\" />
-    <Folder Include="Forms\Suppliers\" />
-    <Folder Include="Helpers\" />
     <Folder Include="Resources\" />
   </ItemGroup>
 

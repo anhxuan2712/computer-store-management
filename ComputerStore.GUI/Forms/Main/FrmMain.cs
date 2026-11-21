@@ -1,6 +1,8 @@
 using ComputerStore.DTO.Entities;
 using ComputerStore.GUI.Forms.Customers;
 using ComputerStore.GUI.Forms.Employees;
+using ComputerStore.GUI.Forms.Products;
+using ComputerStore.GUI.Forms.Suppliers;
 using ComputerStore.GUI.Forms.Transactions;
 
 namespace ComputerStore.GUI.Forms.Main
@@ -116,29 +118,17 @@ namespace ComputerStore.GUI.Forms.Main
 
         private void btnSanPham_Click(object? sender, EventArgs e)
         {
-            MessageBox.Show(
-                "Chức năng Quản lý sản phẩm đang được Thành viên 2 (Nguyễn Phúc Vượng) hoàn thiện.",
-                "Thông báo",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            OpenChildForm(new FrmSanPham(), btnSanPham, "Quản lý sản phẩm");
         }
 
         private void btnDanhMuc_Click(object? sender, EventArgs e)
         {
-            MessageBox.Show(
-                "Chức năng Quản lý danh mục đang được Thành viên 2 (Nguyễn Phúc Vượng) hoàn thiện.",
-                "Thông báo",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            OpenChildForm(new FrmDanhMuc(), btnDanhMuc, "Quản lý danh mục");
         }
 
         private void btnNhaCungCap_Click(object? sender, EventArgs e)
         {
-            MessageBox.Show(
-                "Chức năng Quản lý nhà cung cấp đang được Thành viên 2 (Nguyễn Phúc Vượng) hoàn thiện.",
-                "Thông báo",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            OpenChildForm(new FrmNhaCungCap(), btnNhaCungCap, "Quản lý nhà cung cấp");
         }
 
         private void btnNhanVien_Click(object? sender, EventArgs e)
