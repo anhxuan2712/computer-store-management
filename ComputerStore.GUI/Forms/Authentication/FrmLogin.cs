@@ -1,4 +1,4 @@
-namespace ComputerStore.GUI
+namespace ComputerStore.GUI.Forms.Authentication
 {
     public partial class FrmLogin : Form
     {

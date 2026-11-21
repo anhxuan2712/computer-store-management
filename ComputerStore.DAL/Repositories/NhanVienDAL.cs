@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
@@ -48,7 +48,7 @@ namespace ComputerStore.DAL.Repositories
         }
 
         // 2. TIM NHAN VIEN THEO MA
-        public NhanVienDTO GetById(int id)
+        public NhanVienDTO? GetById(int id)
         {
             string query = @"
                 SELECT
@@ -230,32 +230,32 @@ namespace ComputerStore.DAL.Repositories
 
             command.Parameters.AddWithValue(
                 "@GioiTinh",
-                (object)nhanVien.GioiTinh ?? DBNull.Value
+                (object?)nhanVien.GioiTinh ?? DBNull.Value
             );
 
             command.Parameters.AddWithValue(
                 "@NgaySinh",
-                (object)nhanVien.NgaySinh ?? DBNull.Value
+                (object?)nhanVien.NgaySinh ?? DBNull.Value
             );
 
             command.Parameters.AddWithValue(
                 "@SoDienThoai",
-                (object)nhanVien.SoDienThoai ?? DBNull.Value
+                (object?)nhanVien.SoDienThoai ?? DBNull.Value
             );
 
             command.Parameters.AddWithValue(
                 "@Email",
-                (object)nhanVien.Email ?? DBNull.Value
+                (object?)nhanVien.Email ?? DBNull.Value
             );
 
             command.Parameters.AddWithValue(
                 "@DiaChi",
-                (object)nhanVien.DiaChi ?? DBNull.Value
+                (object?)nhanVien.DiaChi ?? DBNull.Value
             );
 
             command.Parameters.AddWithValue(
                 "@NgayVaoLam",
-                (object)nhanVien.NgayVaoLam ?? DBNull.Value
+                (object?)nhanVien.NgayVaoLam ?? DBNull.Value
             );
 
             command.Parameters.AddWithValue(

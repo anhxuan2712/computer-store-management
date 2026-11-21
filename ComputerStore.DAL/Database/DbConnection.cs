@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using MySql.Data.MySqlClient;
 
@@ -11,10 +11,10 @@ namespace ComputerStore.DAL.Database
 
         private static string BuildConnectionString()
         {
-            string user = Environment.GetEnvironmentVariable(
+            string? user = Environment.GetEnvironmentVariable(
                 "COMPUTERSTORE_DB_USER");
 
-            string password = Environment.GetEnvironmentVariable(
+            string? password = Environment.GetEnvironmentVariable(
                 "COMPUTERSTORE_DB_PASSWORD");
 
             if (string.IsNullOrWhiteSpace(user) ||

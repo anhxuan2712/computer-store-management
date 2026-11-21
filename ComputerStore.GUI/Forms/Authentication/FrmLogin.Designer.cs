@@ -1,4 +1,4 @@
-namespace ComputerStore.GUI
+namespace ComputerStore.GUI.Forms.Authentication
 {
     partial class FrmLogin
     {
@@ -31,7 +31,7 @@ namespace ComputerStore.GUI
             components = new System.ComponentModel.Container();
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Text = "Form1";
+            Text = "FrmLogin";
         }
 
         #endregion

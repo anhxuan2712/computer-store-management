@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using ComputerStore.BLL.Services;
+using ComputerStore.GUI.Forms.Authentication;
 
 namespace ComputerStore.GUI
 {

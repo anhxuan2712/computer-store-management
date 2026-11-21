@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using ComputerStore.DAL.Repositories;
@@ -22,7 +22,7 @@ namespace ComputerStore.BLL.Services
         }
 
         // 2. TIM NHAN VIEN THEO MA
-        public NhanVienDTO GetById(int id)
+        public NhanVienDTO? GetById(int id)
         {
             if (id <= 0)
                 throw new ArgumentException(

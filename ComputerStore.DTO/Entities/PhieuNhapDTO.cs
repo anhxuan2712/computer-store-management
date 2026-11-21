@@ -1,4 +1,4 @@
-﻿
+
 using System;
 
 namespace ComputerStore.DTO.Entities
@@ -10,7 +10,7 @@ namespace ComputerStore.DTO.Entities
         public int MaNhanVien { get; set; }
         public DateTime NgayNhap { get; set; }
         public decimal TongTien { get; set; }
-        public string TrangThai { get; set; }
-        public string GhiChu { get; set; }
+        public string TrangThai { get; set; } = "ChoXacNhan";
+        public string? GhiChu { get; set; }
     }
 }
