@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -14,8 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Forms\Authentication\" />
-    <Folder Include="Forms\Main\" />
     <Folder Include="Forms\Products\" />
     <Folder Include="Forms\Suppliers\" />
     <Folder Include="Helpers\" />

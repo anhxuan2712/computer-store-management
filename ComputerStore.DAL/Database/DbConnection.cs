@@ -1,4 +1,3 @@
-
 using System;
 using MySql.Data.MySqlClient;
 
@@ -6,41 +5,44 @@ namespace ComputerStore.DAL.Database
 {
     public static class DbConnection
     {
-        private static readonly string connectionString =
-            BuildConnectionString();
+        private static string? connectionString;
 
-        private static string BuildConnectionString()
+        private static string GetConnectionString()
         {
-            string? user = Environment.GetEnvironmentVariable(
-                "COMPUTERSTORE_DB_USER");
+            if (!string.IsNullOrEmpty(connectionString))
+                return connectionString;
 
-            string? password = Environment.GetEnvironmentVariable(
-                "COMPUTERSTORE_DB_PASSWORD");
+            string? user = Environment.GetEnvironmentVariable("COMPUTERSTORE_DB_USER");
+            string? password = Environment.GetEnvironmentVariable("COMPUTERSTORE_DB_PASSWORD");
 
-            if (string.IsNullOrWhiteSpace(user) ||
-                string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(password))
             {
                 throw new InvalidOperationException(
-                    "Chua cau hinh bien moi truong MySQL."
+                    "Chưa cấu hình biến môi trường MySQL (COMPUTERSTORE_DB_USER, COMPUTERSTORE_DB_PASSWORD)."
                 );
             }
 
+            string host = Environment.GetEnvironmentVariable("COMPUTERSTORE_DB_HOST") ?? "localhost";
+            string database = Environment.GetEnvironmentVariable("COMPUTERSTORE_DB_NAME") ?? "ComputerStore";
+            uint port = uint.TryParse(Environment.GetEnvironmentVariable("COMPUTERSTORE_DB_PORT"), out uint p) ? p : 3306;
+
             var builder = new MySqlConnectionStringBuilder
             {
-                Server = "localhost",
-                Port = 3306,
-                Database = "ComputerStore",
+                Server = host,
+                Port = port,
+                Database = database,
                 UserID = user,
                 Password = password,
                 CharacterSet = "utf8mb4"
             };
 
-            return builder.ConnectionString;
+            connectionString = builder.ConnectionString;
+            return connectionString;
         }
 
         public static MySqlConnection GetConnection()
         {
-            return new MySqlConnection(connectionString);
+            return new MySqlConnection(GetConnectionString());
         }
 
         public static bool TestConnection(out string message)
@@ -50,13 +52,13 @@ namespace ComputerStore.DAL.Database
                 using (var connection = GetConnection())
                 {
                     connection.Open();
-                    message = "Ket noi MySQL thanh cong!";
+                    message = "Kết nối MySQL thành công!";
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                message = "Ket noi MySQL that bai: " + ex.Message;
+                message = "Kết nối MySQL thất bại: " + ex.Message;
                 return false;
             }
         }

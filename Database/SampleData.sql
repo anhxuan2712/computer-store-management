@@ -86,3 +86,25 @@ VALUES
     ('Chuột không dây Logitech MX Master 3S', 'DM06', 'Cái', 1850000, 2290000, 15, 'Cảm biến Darkfield 8000 DPI, cuộn MagSpeed, sạc Type-C', 1),
     ('Bàn phím cơ DareU EK87 Tenkeyless D-Switch', 'DM06', 'Cái', 430000, 599000, 30, 'Bàn phím cơ 87 phím, LED Rainbow, Red Switch', 1),
     ('Tai nghe Gaming Kingston HyperX Cloud II Red', 'DM06', 'Cái', 1450000, 1890000, 20, 'Âm thanh vòm 7.1 Virtual Surround, đệm tai mút hoạt tính', 1);
+
+
+-- =====================================================
+-- 6. TAI KHOAN MAU (Mat khau mac dinh: 123456, luu SHA-256)
+-- =====================================================
+INSERT INTO TaiKhoan (MaNhanVien, TenDangNhap, MatKhau, VaiTro, TrangThai)
+SELECT MaNhanVien, 'admin', SHA2('123456', 256), 'Admin', 1
+FROM NhanVien
+WHERE SoDienThoai = '0912345678'
+ON DUPLICATE KEY UPDATE
+    MatKhau = VALUES(MatKhau),
+    VaiTro = VALUES(VaiTro),
+    TrangThai = VALUES(TrangThai);
+
+INSERT INTO TaiKhoan (MaNhanVien, TenDangNhap, MatKhau, VaiTro, TrangThai)
+SELECT MaNhanVien, 'nhanvien', SHA2('123456', 256), 'NhanVien', 1
+FROM NhanVien
+WHERE SoDienThoai = '0923456789'
+ON DUPLICATE KEY UPDATE
+    MatKhau = VALUES(MatKhau),
+    VaiTro = VALUES(VaiTro),
+    TrangThai = VALUES(TrangThai);
