@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using ComputerStore.BLL.Services;
+using ComputerStore.GUI.Forms.Suppliers;
 
 namespace ComputerStore.GUI
 {
@@ -29,14 +30,7 @@ namespace ComputerStore.GUI
                 return;
             }
 
-            MessageBox.Show(
-                message,
-                "Kiem tra ket noi Database",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
-
-            Application.Run(new FrmLogin());
+            Application.Run(new FrmNhaCungCap());
         }
     }
 }

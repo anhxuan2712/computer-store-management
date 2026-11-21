@@ -243,11 +243,13 @@ Server=localhost;Port=3306;Database=ComputerStore;Uid=app_user;Pwd=YOUR_PASSWORD
 -   Nếu MySQL chạy trên chính máy thành viên: dùng `localhost`.
 -   Nếu cả nhóm kết nối đến một máy chủ MySQL chung trong mạng LAN: thay
     `localhost` bằng IP máy chủ.
--   Tài khoản `app_user` và quyền truy cập phải được người quản trị
-    database tạo/cấp.
--   Không commit mật khẩu thật vào Git. Dùng file cấu hình cục bộ không
-    đưa lên repository, hoặc cơ chế cấu hình an toàn phù hợp với loại
-    project.
+-   Ứng dụng dùng tài khoản `root` nếu chưa đặt `COMPUTERSTORE_DB_USER`;
+    có thể đặt biến này nếu bạn dùng tài khoản MySQL khác.
+-   Đặt mật khẩu MySQL cục bộ trong biến môi trường
+    `COMPUTERSTORE_DB_PASSWORD`, ví dụ trong PowerShell:
+    `setx COMPUTERSTORE_DB_PASSWORD "mat_khau_MySQL_cua_ban"`.
+    Khởi động lại Visual Studio sau khi đặt biến.
+-   Không commit mật khẩu thật vào Git.
 
 Không mở cổng MySQL 3306 trực tiếp ra Internet. Nếu làm việc từ xa, dùng
 VPN hoặc môi trường máy chủ được bảo vệ.
