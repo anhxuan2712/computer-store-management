@@ -34,29 +34,76 @@ Phạm vi ban đầu được giữ ở mức vừa phải để nhóm có thể
 
 Tất cả thành viên nên dùng cùng .NET 10 SDK và phiên bản Visual Studio mở được file `ComputerStore.slnx` để tránh lỗi tương thích.
 
-## 3. Phạm vi chức năng, phân công và ánh xạ Form ↔ DB
+## 3. Phân công thành viên, phạm vi chức năng và danh sách file
 
-Các Form được thiết kế bám sát 10 bảng trong `Database/ComputerStore.mwb`:
+Dự án được chia cho **3 thành viên**, bám sát 10 bảng trong `Database/ComputerStore.mwb`. Mỗi thành viên chịu trách nhiệm xuyên suốt cả 4 tầng (`GUI`, `BLL`, `DAL`, `DTO`) cho phân hệ của mình.
 
-### Thành viên 1 -- Hệ thống (`feature/system-management`)
+| Thành viên | Họ và tên | Vai trò chính | Nhánh Git |
+| :--- | :--- | :--- | :--- |
+| **Thành viên 1** | **Nguyễn Anh Xuân** | Trưởng nhóm, Hệ thống, Database & Tích hợp | `feature/system-management` |
+| **Thành viên 2** | **Nguyễn Phúc Vượng** | Quản lý Danh mục, Sản phẩm & Nhà cung cấp | `feature/product-management` |
+| **Thành viên 3** | **Nguyễn Minh Trí** | Quản lý Khách hàng & Giao dịch Nhập / Bán hàng | `feature/sales-inventory` |
+
+---
+
+### Thành viên 1: Nguyễn Anh Xuân -- Hệ thống, Database & Tích hợp (`feature/system-management`)
+
+**Công việc đảm nhận:**
+- Khởi tạo kiến trúc Solution 4 tầng (`GUI`, `BLL`, `DAL`, `DTO`), cấu hình `.NET 10`, file `ComputerStore.slnx` và tầng kết nối MySQL (`DbConnection`, `DatabaseService`).
+- Thiết kế, chuẩn hóa và quản lý cơ sở dữ liệu dùng chung (`ComputerStore.mwb`, `ComputerStore.sql`, `SampleData.sql`) và đồng bộ 10 lớp entity trong `ComputerStore.DTO/Entities/`.
+- Xây dựng chức năng **Đăng nhập** (`FrmLogin` — đối chiếu SHA-256, kiểm tra `TrangThai = 1`, lấy `VaiTro`), **Màn hình chính** (`FrmMain` — điều hướng các Form nghiệp vụ, phân quyền `Admin`/`NhanVien`, đăng xuất) và **Quản lý Nhân viên & Tài khoản** (`FrmNhanVien` — CRUD, tìm kiếm, cấp/cập nhật/khóa tài khoản).
+- Điều phối Git/GitHub, review code, merge các nhánh của thành viên 2 & 3 vào `main`, kiểm thử tích hợp và duy trì tài liệu `README.md`.
 
 | Form | Thư mục / Namespace | Bảng DB thao tác | Nghiệp vụ chính |
 | :--- | :--- | :--- | :--- |
 | `FrmLogin` | `Forms/Authentication/` (`ComputerStore.GUI.Forms.Authentication`) | `TaiKhoan`, `NhanVien` | Đăng nhập bằng `TenDangNhap`/`MatKhau`, kiểm tra `TrangThai = 1`, lấy `VaiTro` (`Admin`/`NhanVien`) |
-| `FrmMain` | `Forms/Main/` (`ComputerStore.GUI.Forms.Main`) | `TaiKhoan` (phiên đăng nhập) | Màn hình chính, điều hướng sang các Form nghiệp vụ, phân quyền theo `VaiTro` |
-| `FrmNhanVien` | `Forms/Employees/` (`ComputerStore.GUI.Forms.Employees`) | `NhanVien`, `TaiKhoan` | CRUD & tìm kiếm nhân viên (`HoTen`, `GioiTinh`, `NgaySinh`, `SoDienThoai`, `Email`, `DiaChi`, `NgayVaoLam`, `TrangThai`), cấp/khóa tài khoản liên kết |
+| `FrmMain` | `Forms/Main/` (`ComputerStore.GUI.Forms.Main`) | `TaiKhoan` (phiên đăng nhập) | Màn hình chính, điều hướng sang toàn bộ các Form nghiệp vụ, phân quyền theo `VaiTro`, đăng xuất |
+| `FrmNhanVien` | `Forms/Employees/` (`ComputerStore.GUI.Forms.Employees`) | `NhanVien`, `TaiKhoan` | CRUD & tìm kiếm nhân viên, kiểm tra trùng SĐT/Email, cấp/sửa/khóa tài khoản liên kết |
 
-- Phụ trách điều phối repository, quy ước code, schema DB, tích hợp và kiểm thử tổng thể.
+**Danh sách file phụ trách:**
+- **Solution & Tài liệu:** `ComputerStore.slnx`, `.gitignore`, `README.md`, các file `.csproj` của 4 project.
+- **Database:** `Database/ComputerStore.mwb`, `Database/ComputerStore.sql`, `Database/SampleData.sql`, `Database/ComputerStore-Database-README.md`.
+- **DTO:** `ComputerStore.DTO/Entities/NhanVienDTO.cs`, `ComputerStore.DTO/Entities/TaiKhoanDTO.cs` (và đồng bộ toàn bộ `ComputerStore.DTO/Entities/`).
+- **DAL:** `ComputerStore.DAL/Database/DbConnection.cs`, `ComputerStore.DAL/Repositories/TaiKhoanDAL.cs`, `ComputerStore.DAL/Repositories/NhanVienDAL.cs`.
+- **BLL:** `ComputerStore.BLL/Services/DatabaseService.cs`, `ComputerStore.BLL/Services/TaiKhoanBLL.cs`, `ComputerStore.BLL/Services/NhanVienBLL.cs`.
+- **GUI:**
+  - `ComputerStore.GUI/Program.cs`
+  - `ComputerStore.GUI/Forms/Authentication/FrmLogin.cs`, `FrmLogin.Designer.cs`, `FrmLogin.resx`
+  - `ComputerStore.GUI/Forms/Main/FrmMain.cs`, `FrmMain.Designer.cs`, `FrmMain.resx`
+  - `ComputerStore.GUI/Forms/Employees/FrmNhanVien.cs`, `FrmNhanVien.Designer.cs`, `FrmNhanVien.resx`
 
-### Thành viên 2 -- Quản lý sản phẩm (`feature/product-management`)
+---
+
+### Thành viên 2: Nguyễn Phúc Vượng -- Quản lý sản phẩm (`feature/product-management`)
+
+**Công việc đảm nhận:**
+- Xây dựng trọn bộ CRUD, tìm kiếm và kiểm tra ràng buộc khóa ngoại trước khi xóa cho 3 phân hệ: **Danh mục**, **Sản phẩm** và **Nhà cung cấp**.
+- Xây dựng helper dựng control giao diện dùng chung cho các màn hình quản lý (`ManagementFormControls.cs`).
 
 | Form | Thư mục / Namespace | Bảng DB thao tác | Nghiệp vụ chính |
 | :--- | :--- | :--- | :--- |
-| `FrmSanPham` | `Forms/Products/` (`ComputerStore.GUI.Forms.Products`) | `SanPham`, `DanhMuc` | CRUD & tìm kiếm sản phẩm (`TenSanPham`, `MaDanhMuc`, `DonViTinh`, `GiaNhap`, `GiaBan`, `SoLuongTon`, `MoTa`, `TrangThai`) |
-| `FrmDanhMuc` | `Forms/Products/` (`ComputerStore.GUI.Forms.Products`) | `DanhMuc` | Quản lý danh mục (`MaDanhMuc`, `TenDanhMuc`, `MoTa`) |
-| `FrmNhaCungCap` | `Forms/Suppliers/` (`ComputerStore.GUI.Forms.Suppliers`) | `NhaCungCap` | Quản lý nhà cung cấp (`TenNhaCungCap`, `SoDienThoai`, `Email`, `DiaChi`, `TrangThai`) |
+| `FrmSanPham` | `Forms/Products/` (`ComputerStore.GUI.Forms.Products`) | `SanPham`, `DanhMuc` | CRUD & tìm kiếm sản phẩm (`TenSanPham`, `MaDanhMuc`, `DonViTinh`, `GiaNhap`, `GiaBan`, `SoLuongTon`, `MoTa`, `TrangThai`), chặn xóa nếu đã có giao dịch |
+| `FrmDanhMuc` | `Forms/Products/` (`ComputerStore.GUI.Forms.Products`) | `DanhMuc` | Quản lý danh mục (`MaDanhMuc`, `TenDanhMuc`, `MoTa`), chặn xóa nếu đã có sản phẩm |
+| `FrmNhaCungCap` | `Forms/Suppliers/` (`ComputerStore.GUI.Forms.Suppliers`) | `NhaCungCap` | Quản lý nhà cung cấp (`TenNhaCungCap`, `SoDienThoai`, `Email`, `DiaChi`, `TrangThai`), chặn xóa nếu đã có phiếu nhập |
 
-### Thành viên 3 -- Khách hàng và giao dịch (`feature/sales-inventory`)
+**Danh sách file phụ trách:**
+- **DTO:** `ComputerStore.DTO/Entities/DanhMucDTO.cs`, `ComputerStore.DTO/Entities/SanPhamDTO.cs`, `ComputerStore.DTO/Entities/NhaCungCapDTO.cs`.
+- **DAL:** `ComputerStore.DAL/Repositories/DanhMucDAL.cs`, `ComputerStore.DAL/Repositories/SanPhamDAL.cs`, `ComputerStore.DAL/Repositories/NhaCungCapDAL.cs`.
+- **BLL:** `ComputerStore.BLL/Services/DanhMucBLL.cs`, `ComputerStore.BLL/Services/SanPhamBLL.cs`, `ComputerStore.BLL/Services/NhaCungCapBLL.cs`.
+- **GUI:**
+  - `ComputerStore.GUI/Forms/Products/FrmDanhMuc.cs`, `FrmDanhMuc.resx`
+  - `ComputerStore.GUI/Forms/Products/FrmSanPham.cs`, `FrmSanPham.resx`
+  - `ComputerStore.GUI/Forms/Suppliers/FrmNhaCungCap.cs`, `FrmNhaCungCap.resx`
+  - `ComputerStore.GUI/Helpers/ManagementFormControls.cs`
+
+---
+
+### Thành viên 3: Nguyễn Minh Trí -- Khách hàng và giao dịch (`feature/sales-inventory`)
+
+**Công việc đảm nhận:**
+- Xây dựng chức năng **Quản lý Khách hàng** (CRUD & tìm kiếm).
+- Xây dựng nghiệp vụ **Nhập hàng** và **Bán hàng** sử dụng MySQL transaction để đảm bảo lưu phiếu/hóa đơn, chi tiết và cập nhật tồn kho (`SanPham.SoLuongTon`) nhất quán, không cho bán vượt tồn kho.
+- Xây dựng model hiển thị dòng chi tiết giao dịch (`DongChiTietModel.cs`).
 
 | Form | Thư mục / Namespace | Bảng DB thao tác | Nghiệp vụ chính |
 | :--- | :--- | :--- | :--- |
@@ -64,7 +111,16 @@ Các Form được thiết kế bám sát 10 bảng trong `Database/ComputerStor
 | `FrmNhapHang` | `Forms/Transactions/` (`ComputerStore.GUI.Forms.Transactions`) | `PhieuNhap`, `ChiTietPhieuNhap`, `SanPham`, `NhaCungCap`, `NhanVien` | Lập phiếu nhập, xác nhận (`ChoXacNhan` → `DaXacNhan`) và tăng `SanPham.SoLuongTon` trong transaction |
 | `FrmBanHang` | `Forms/Transactions/` (`ComputerStore.GUI.Forms.Transactions`) | `HoaDon`, `ChiTietHoaDon`, `SanPham`, `KhachHang`, `NhanVien` | Lập hóa đơn (hỗ trợ `MaKhachHang NULL` cho khách lẻ), thanh toán (`ChoThanhToan` → `DaThanhToan`) và trừ `SanPham.SoLuongTon` trong transaction |
 
-Phân công trên là phân công chính. Các thành viên vẫn cần phối hợp khi chức năng của mình sử dụng dữ liệu do thành viên khác quản lý.
+**Danh sách file phụ trách:**
+- **DTO:** `ComputerStore.DTO/Entities/KhachHangDTO.cs`, `ComputerStore.DTO/Entities/PhieuNhapDTO.cs`, `ComputerStore.DTO/Entities/ChiTietPhieuNhap.cs`, `ComputerStore.DTO/Entities/HoaDonDTO.cs`, `ComputerStore.DTO/Entities/ChiTietHoaDon.cs`, `ComputerStore.DTO/Models/DongChiTietModel.cs`.
+- **DAL:** `ComputerStore.DAL/Repositories/KhachHangDAL.cs`, `ComputerStore.DAL/Repositories/NhapHangDAL.cs`, `ComputerStore.DAL/Repositories/BanHangDAL.cs`.
+- **BLL:** `ComputerStore.BLL/Services/KhachHangBLL.cs`, `ComputerStore.BLL/Services/NhapHangBLL.cs`, `ComputerStore.BLL/Services/BanHangBLL.cs`.
+- **GUI:**
+  - `ComputerStore.GUI/Forms/Customers/FrmKhachHang.cs`, `FrmKhachHang.Designer.cs`, `FrmKhachHang.resx`
+  - `ComputerStore.GUI/Forms/Transactions/FrmNhapHang.cs`, `FrmNhapHang.Designer.cs`, `FrmNhapHang.resx`
+  - `ComputerStore.GUI/Forms/Transactions/FrmBanHang.cs`, `FrmBanHang.Designer.cs`, `FrmBanHang.resx`
+
+Phân công trên là phân công chính. Các thành viên vẫn phối hợp khi chức năng của mình sử dụng dữ liệu do thành viên khác quản lý.
 
 ## 4. Danh mục hàng hóa ban đầu
 
@@ -86,7 +142,7 @@ Có thể bổ sung danh mục sau khi cả nhóm thống nhất. Mỗi sản ph
 Cấu trúc thực tế đã thống nhất (các file Form/BLL/DAL được bổ sung dần khi từng thành viên hoàn thành chức năng):
 
 ```text
-ComputerStore/
+computer-store-management/
 ├── ComputerStore.slnx
 │
 ├── ComputerStore.GUI/
@@ -105,14 +161,11 @@ ComputerStore/
 │   │   │   └── FrmNhanVien.resx
 │   │   ├── Products/
 │   │   │   ├── FrmSanPham.cs
-│   │   │   ├── FrmSanPham.Designer.cs
 │   │   │   ├── FrmSanPham.resx
 │   │   │   ├── FrmDanhMuc.cs
-│   │   │   ├── FrmDanhMuc.Designer.cs
 │   │   │   └── FrmDanhMuc.resx
 │   │   ├── Suppliers/
 │   │   │   ├── FrmNhaCungCap.cs
-│   │   │   ├── FrmNhaCungCap.Designer.cs
 │   │   │   └── FrmNhaCungCap.resx
 │   │   ├── Customers/
 │   │   │   ├── FrmKhachHang.cs
@@ -126,21 +179,21 @@ ComputerStore/
 │   │       ├── FrmBanHang.Designer.cs
 │   │       └── FrmBanHang.resx
 │   ├── Helpers/
+│   │   └── ManagementFormControls.cs
 │   ├── Resources/
 │   └── Program.cs
 │
 ├── ComputerStore.BLL/
-│   ├── Services/
-│   │   ├── DatabaseService.cs       # kiểm tra kết nối DB khi khởi động
-│   │   ├── TaiKhoanBLL.cs
-│   │   ├── NhanVienBLL.cs
-│   │   ├── SanPhamBLL.cs
-│   │   ├── DanhMucBLL.cs
-│   │   ├── NhaCungCapBLL.cs
-│   │   ├── KhachHangBLL.cs
-│   │   ├── NhapHangBLL.cs
-│   │   └── BanHangBLL.cs
-│   └── Validators/
+│   └── Services/
+│       ├── DatabaseService.cs       # kiểm tra kết nối DB khi khởi động
+│       ├── TaiKhoanBLL.cs
+│       ├── NhanVienBLL.cs
+│       ├── SanPhamBLL.cs
+│       ├── DanhMucBLL.cs
+│       ├── NhaCungCapBLL.cs
+│       ├── KhachHangBLL.cs
+│       ├── NhapHangBLL.cs
+│       └── BanHangBLL.cs
 │
 ├── ComputerStore.DAL/
 │   ├── Database/
@@ -168,17 +221,13 @@ ComputerStore/
 │   │   ├── HoaDonDTO.cs
 │   │   └── ChiTietHoaDon.cs         # lớp ChiTietHoaDonDTO
 │   └── Models/                      # lớp phục vụ hiển thị trên Form, không ứng với bảng DB
+│       └── DongChiTietModel.cs
 │
 ├── Database/
 │   ├── ComputerStore.sql            # schema chính (đồng bộ với ComputerStore.mwb)
-│   ├── SampleData.sql               # dữ liệu mẫu
+│   ├── SampleData.sql               # dữ liệu mẫu (6 danh mục, 20 sản phẩm, 2 tài khoản mẫu)
 │   ├── ComputerStore.mwb            # mô hình MySQL Workbench (ERD) gốc
 │   └── ComputerStore-Database-README.md
-│
-├── Documents/                       # tài liệu báo cáo (bổ sung khi nộp đồ án)
-│   ├── ERD.png
-│   ├── PhanTichChucNang.docx
-│   └── PhanCongCongViec.docx
 │
 └── README.md
 ```
@@ -441,7 +490,14 @@ Nếu phát sinh conflict, đọc và giải quyết từng file, kiểm tra bui
 9. Build Solution.
 10. Nhấn `F5` để chạy ứng dụng.
 
-Nếu gặp lỗi, kiểm tra lần lượt: MySQL service đã chạy chưa, đã đặt 2 biến môi trường và khởi động lại Visual Studio chưa, tài khoản/database có đúng không, NuGet đã restore chưa, và Startup Project đã chọn đúng chưa.
+### Tài khoản đăng nhập mẫu (trong `Database/SampleData.sql`)
+
+| Tên đăng nhập | Mật khẩu | Vai trò |
+| :--- | :--- | :--- |
+| `admin` | `123456` | `Admin` (toàn quyền) |
+| `nhanvien` | `123456` | `NhanVien` (ẩn quản lý nhân viên) |
+
+Nếu gặp lỗi, kiểm tra lần lượt: MySQL service đã chạy chưa, đã đặt 2 biến môi trường và khởi động lại Visual Studio chưa, tài khoản/database có đúng không, NuGet đã restore chưa, và Startup Project đã chọn đúng `ComputerStore.GUI` chưa.
 
 ------------------------------------------------------------------------
 
