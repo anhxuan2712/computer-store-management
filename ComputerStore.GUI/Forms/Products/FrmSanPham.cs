@@ -1,81 +1,56 @@
-using System.Drawing;
 using ComputerStore.BLL.Services;
 using ComputerStore.DTO.Entities;
-using ComputerStore.GUI.Helpers;
 
 namespace ComputerStore.GUI.Forms.Products
 {
-    public class FrmSanPham : Form
+    public partial class FrmSanPham : Form
     {
-        private readonly SanPhamBLL service = new();
-        private readonly DanhMucBLL categoryService = new();
-        private readonly DataGridView grid = ManagementFormControls.CreateGrid();
-        private readonly TextBox txtSearch = new();
-        private readonly TextBox txtName = new();
-        private readonly TextBox txtUnit = new() { Text = "Cái" };
-        private readonly TextBox txtImportPrice = new();
-        private readonly TextBox txtSalePrice = new();
-        private readonly TextBox txtDescription = new();
-        private readonly ComboBox cboCategory = new() { DropDownStyle = ComboBoxStyle.DropDownList };
-        private readonly ComboBox cboStatus = ManagementFormControls.CreateStatusCombo();
-        private int? selectedId;
-
         public FrmSanPham()
         {
-            Text = "Quản lý sản phẩm";
-            StartPosition = FormStartPosition.CenterParent;
-            ClientSize = new Size(1120, 700);
-            MinimumSize = new Size(900, 600);
-            BuildLayout();
-            grid.SelectionChanged += Grid_SelectionChanged;
-            Load += (_, _) => LoadData();
+            InitializeComponent();
         }
 
-        private void BuildLayout()
+        /* =====================================================================
+         * HƯỚNG DẪN NỐI LẠI SAU KHI KÉO THẢ UI (Visual Studio Designer):
+         * Đặt thuộc tính (Name) cho các control như sau, gán sự kiện tương ứng
+         * rồi bỏ comment khối code bên dưới:
+         *   - TextBox      : txtSearch, txtName (MaxLength=150), txtUnit (MaxLength=30),
+         *                    txtImportPrice, txtSalePrice, txtDescription (MaxLength=255)
+         *   - ComboBox     : cboCategory (DropDownStyle=DropDownList),
+         *                    cboStatus   (DropDownStyle=DropDownList; Items: "Hoạt động", "Ngừng hoạt động")
+         *   - Button       : btnTimKiem -> Click: BtnTimKiem_Click
+         *                    btnTaiLai  -> Click: BtnTaiLai_Click
+         *                    btnThem    -> Click: Add_Click
+         *                    btnSua     -> Click: Update_Click
+         *                    btnXoa     -> Click: Delete_Click
+         *                    btnLamMoi  -> Click: BtnLamMoi_Click
+         *   - DataGridView : grid       -> SelectionChanged: Grid_SelectionChanged
+         *   - Form         : FrmSanPham -> Load: FrmSanPham_Load
+         * =====================================================================
+
+        private readonly SanPhamBLL service = new();
+        private readonly DanhMucBLL categoryService = new();
+        private int? selectedId;
+
+        private void FrmSanPham_Load(object? sender, EventArgs e)
         {
-            txtName.MaxLength = 150;
-            txtUnit.MaxLength = 30;
-            txtDescription.MaxLength = 255;
-            txtSearch.Width = 220;
-            cboCategory.DropDownStyle = ComboBoxStyle.DropDownList;
-
-            var toolbar = ManagementFormControls.CreateToolbar();
-            toolbar.Controls.Add(new Label { Text = "Tìm kiếm:", AutoSize = true, Padding = new Padding(0, 10, 0, 0) });
-            toolbar.Controls.Add(txtSearch);
-            var search = ManagementFormControls.CreateButton("Tìm kiếm");
-            search.Click += (_, _) => LoadData(txtSearch.Text);
-            toolbar.Controls.Add(search);
-            var refresh = ManagementFormControls.CreateButton("Tải lại");
-            refresh.Click += (_, _) => { txtSearch.Clear(); LoadData(); ClearFields(); };
-            toolbar.Controls.Add(refresh);
-            var add = ManagementFormControls.CreateButton("Thêm");
-            add.Click += Add_Click;
-            toolbar.Controls.Add(add);
-            var update = ManagementFormControls.CreateButton("Cập nhật");
-            update.Click += Update_Click;
-            toolbar.Controls.Add(update);
-            var delete = ManagementFormControls.CreateButton("Xóa");
-            delete.Click += Delete_Click;
-            toolbar.Controls.Add(delete);
-            var clear = ManagementFormControls.CreateButton("Làm mới form");
-            clear.Click += (_, _) => ClearFields();
-            toolbar.Controls.Add(clear);
-
-            var editor = ManagementFormControls.CreateToolbar();
-            editor.Controls.Add(ManagementFormControls.CreateField("Tên sản phẩm *", txtName, 210));
-            editor.Controls.Add(ManagementFormControls.CreateField("Danh mục *", cboCategory, 190));
-            editor.Controls.Add(ManagementFormControls.CreateField("Đơn vị tính *", txtUnit, 130));
-            editor.Controls.Add(ManagementFormControls.CreateField("Giá nhập *", txtImportPrice, 150));
-            editor.Controls.Add(ManagementFormControls.CreateField("Giá bán *", txtSalePrice, 150));
-            editor.Controls.Add(ManagementFormControls.CreateField("Trạng thái", cboStatus, 150));
-            editor.Controls.Add(ManagementFormControls.CreateField("Mô tả", txtDescription, 280));
-
-            var root = ManagementFormControls.CreateRoot();
-            root.Controls.Add(toolbar, 0, 0);
-            root.Controls.Add(editor, 0, 1);
-            root.Controls.Add(grid, 0, 2);
-            Controls.Add(root);
+            cboStatus.Items.Clear();
+            cboStatus.Items.AddRange(new object[] { "Hoạt động", "Ngừng hoạt động" });
+            cboStatus.SelectedIndex = 0;
+            txtUnit.Text = "Cái";
+            LoadData();
         }
+
+        private void BtnTimKiem_Click(object? sender, EventArgs e) => LoadData(txtSearch.Text);
+
+        private void BtnTaiLai_Click(object? sender, EventArgs e)
+        {
+            txtSearch.Clear();
+            LoadData();
+            ClearFields();
+        }
+
+        private void BtnLamMoi_Click(object? sender, EventArgs e) => ClearFields();
 
         private void LoadData(string keyword = "")
         {
@@ -85,17 +60,17 @@ namespace ComputerStore.GUI.Forms.Products
                 cboCategory.DisplayMember = nameof(DanhMucDTO.TenDanhMuc);
                 cboCategory.ValueMember = nameof(DanhMucDTO.MaDanhMuc);
                 grid.DataSource = service.Search(keyword);
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.MaSanPham), "Mã SP");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.TenSanPham), "Tên sản phẩm");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.MaDanhMuc), "Mã DM");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.TenDanhMuc), "Danh mục");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.DonViTinh), "Đơn vị");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.GiaNhap), "Giá nhập");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.GiaBan), "Giá bán");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.SoLuongTon), "Tồn kho");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.MoTa), "Mô tả");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.TrangThai), "Trạng thái");
-                ManagementFormControls.SetColumnHeader(grid, nameof(SanPhamDTO.NgayTao), "Ngày tạo");
+                SetColumnHeader(nameof(SanPhamDTO.MaSanPham), "Mã SP");
+                SetColumnHeader(nameof(SanPhamDTO.TenSanPham), "Tên sản phẩm");
+                SetColumnHeader(nameof(SanPhamDTO.MaDanhMuc), "Mã DM");
+                SetColumnHeader(nameof(SanPhamDTO.TenDanhMuc), "Danh mục");
+                SetColumnHeader(nameof(SanPhamDTO.DonViTinh), "Đơn vị");
+                SetColumnHeader(nameof(SanPhamDTO.GiaNhap), "Giá nhập");
+                SetColumnHeader(nameof(SanPhamDTO.GiaBan), "Giá bán");
+                SetColumnHeader(nameof(SanPhamDTO.SoLuongTon), "Tồn kho");
+                SetColumnHeader(nameof(SanPhamDTO.MoTa), "Mô tả");
+                SetColumnHeader(nameof(SanPhamDTO.TrangThai), "Trạng thái");
+                SetColumnHeader(nameof(SanPhamDTO.NgayTao), "Ngày tạo");
                 if (grid.Columns[nameof(SanPhamDTO.GiaNhap)] is DataGridViewColumn colGiaNhap)
                     colGiaNhap.DefaultCellStyle.Format = "N0";
                 if (grid.Columns[nameof(SanPhamDTO.GiaBan)] is DataGridViewColumn colGiaBan)
@@ -106,6 +81,12 @@ namespace ComputerStore.GUI.Forms.Products
             {
                 ShowError(ex);
             }
+        }
+
+        private void SetColumnHeader(string property, string title)
+        {
+            if (grid.Columns[property] is DataGridViewColumn col)
+                col.HeaderText = title;
         }
 
         private void Add_Click(object? sender, EventArgs e)
@@ -199,5 +180,6 @@ namespace ComputerStore.GUI.Forms.Products
         {
             MessageBox.Show(this, ex.Message, "Lỗi quản lý sản phẩm", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+        */
     }
 }

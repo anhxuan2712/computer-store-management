@@ -11,8 +11,6 @@ namespace ComputerStore.GUI.Forms.Main
     {
         private readonly TaiKhoanDTO currentAccount;
         private readonly NhanVienDTO? currentEmployee;
-        private Form? activeForm;
-        private Button? activeButton;
 
         public bool IsLogout { get; private set; }
 
@@ -22,6 +20,20 @@ namespace ComputerStore.GUI.Forms.Main
             currentEmployee = employee;
             InitializeComponent();
         }
+
+        /* =====================================================================
+         * HƯỚNG DẪN NỐI LẠI SAU KHI KÉO THẢ UI (Visual Studio Designer):
+         * Đặt thuộc tính (Name) cho các control như sau, gán sự kiện tương ứng
+         * rồi bỏ comment khối code bên dưới:
+         *   - Panel  : pnlContent (vùng chứa Form con), pnlHome (màn hình chào mừng)
+         *   - Label  : lblUserInfo, lblThongTinPhien
+         *   - Button : btnTrangChu, btnBanHang, btnNhapHang, btnKhachHang,
+         *              btnSanPham, btnDanhMuc, btnNhaCungCap, btnNhanVien, btnDangXuat
+         *   - Form   : FrmMain -> Load: FrmMain_Load
+         * =====================================================================
+
+        private Form? activeForm;
+        private Button? activeButton;
 
         private void FrmMain_Load(object? sender, EventArgs e)
         {
@@ -34,7 +46,7 @@ namespace ComputerStore.GUI.Forms.Main
                 $"Nhân viên: {tenHienThi}   |   " +
                 $"Vai trò: {vaiTroText}";
 
-            // Phan quyen: chi Admin moi duoc quan ly nhan vien va tai khoan
+            // Phân quyền: chỉ Admin mới được quản lý nhân viên và tài khoản
             bool isAdmin = string.Equals(currentAccount.VaiTro, "Admin", StringComparison.OrdinalIgnoreCase);
             btnNhanVien.Visible = isAdmin;
 
@@ -151,5 +163,6 @@ namespace ComputerStore.GUI.Forms.Main
             CloseActiveForm();
             base.OnFormClosed(e);
         }
+        */
     }
 }

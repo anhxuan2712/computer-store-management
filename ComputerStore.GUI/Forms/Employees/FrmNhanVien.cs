@@ -5,13 +5,31 @@ namespace ComputerStore.GUI.Forms.Employees
 {
     public partial class FrmNhanVien : Form
     {
-        private readonly NhanVienBLL nhanVienBLL = new NhanVienBLL();
-        private readonly TaiKhoanBLL taiKhoanBLL = new TaiKhoanBLL();
-
         public FrmNhanVien()
         {
             InitializeComponent();
         }
+
+        /* =====================================================================
+         * HƯỚNG DẪN NỐI LẠI SAU KHI KÉO THẢ UI (Visual Studio Designer):
+         * Đặt thuộc tính (Name) cho các control như sau, gán sự kiện tương ứng
+         * rồi bỏ comment khối code bên dưới:
+         *   - Thông tin NV:
+         *       TextBox        : txtMa (ReadOnly=true), txtHoTen, txtSdt, txtEmail, txtDiaChi, txtTimKiem
+         *       ComboBox       : cboGioiTinh, cboTrangThai
+         *       DateTimePicker : dtpNgaySinh (ShowCheckBox=true), dtpNgayVaoLam (ShowCheckBox=true)
+         *       Button         : btnThem, btnSua, btnXoa, btnLamMoi, btnTimKiem
+         *       DataGridView   : dgvNhanVien (SelectionChanged, CellFormatting)
+         *   - Tài khoản liên kết:
+         *       GroupBox       : grpTaiKhoan
+         *       TextBox        : txtTenDangNhap, txtMatKhau
+         *       ComboBox       : cboVaiTro, cboTrangThaiTK
+         *       Button         : btnLuuTaiKhoan
+         *   - Form: FrmNhanVien -> Load: FrmNhanVien_Load
+         * =====================================================================
+
+        private readonly NhanVienBLL nhanVienBLL = new NhanVienBLL();
+        private readonly TaiKhoanBLL taiKhoanBLL = new TaiKhoanBLL();
 
         private void FrmNhanVien_Load(object? sender, EventArgs e)
         {
@@ -294,5 +312,6 @@ namespace ComputerStore.GUI.Forms.Employees
 
         private static void ShowError(string message) =>
             MessageBox.Show(message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        */
     }
 }

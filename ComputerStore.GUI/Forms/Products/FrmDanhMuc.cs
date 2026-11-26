@@ -1,82 +1,66 @@
-using System.Drawing;
 using ComputerStore.BLL.Services;
 using ComputerStore.DTO.Entities;
-using ComputerStore.GUI.Helpers;
 
 namespace ComputerStore.GUI.Forms.Products
 {
-    public class FrmDanhMuc : Form
+    public partial class FrmDanhMuc : Form
     {
-        private readonly DanhMucBLL service = new();
-        private readonly DataGridView grid = ManagementFormControls.CreateGrid();
-        private readonly TextBox txtSearch = new();
-        private readonly TextBox txtId = new();
-        private readonly TextBox txtName = new();
-        private readonly TextBox txtDescription = new();
-        private string? selectedId;
-
         public FrmDanhMuc()
         {
-            Text = "Quản lý danh mục";
-            StartPosition = FormStartPosition.CenterParent;
-            ClientSize = new Size(1000, 650);
-            MinimumSize = new Size(800, 520);
-            BuildLayout();
-            grid.SelectionChanged += Grid_SelectionChanged;
-            Load += (_, _) => LoadData();
+            InitializeComponent();
         }
 
-        private void BuildLayout()
+        /* =====================================================================
+         * HƯỚNG DẪN NỐI LẠI SAU KHI KÉO THẢ UI (Visual Studio Designer):
+         * Đặt thuộc tính (Name) cho các control như sau, gán sự kiện tương ứng
+         * rồi bỏ comment khối code bên dưới:
+         *   - TextBox      : txtSearch, txtId (MaxLength=10), txtName (MaxLength=100), txtDescription (MaxLength=255)
+         *   - Button       : btnTimKiem  -> Click: BtnTimKiem_Click
+         *                    btnTaiLai   -> Click: BtnTaiLai_Click
+         *                    btnThem     -> Click: Add_Click
+         *                    btnSua      -> Click: Update_Click
+         *                    btnXoa      -> Click: Delete_Click
+         *                    btnLamMoi   -> Click: BtnLamMoi_Click
+         *   - DataGridView : grid        -> SelectionChanged: Grid_SelectionChanged
+         *   - Form         : FrmDanhMuc  -> Load: FrmDanhMuc_Load
+         * =====================================================================
+
+        private readonly DanhMucBLL service = new();
+        private string? selectedId;
+
+        private void FrmDanhMuc_Load(object? sender, EventArgs e)
         {
-            txtId.MaxLength = 10;
-            txtName.MaxLength = 100;
-            txtDescription.MaxLength = 255;
-            txtSearch.Width = 220;
-
-            var toolbar = ManagementFormControls.CreateToolbar();
-            toolbar.Controls.Add(new Label { Text = "Tìm kiếm:", AutoSize = true, Padding = new Padding(0, 10, 0, 0) });
-            toolbar.Controls.Add(txtSearch);
-            var search = ManagementFormControls.CreateButton("Tìm kiếm");
-            search.Click += (_, _) => LoadData(txtSearch.Text);
-            toolbar.Controls.Add(search);
-            var refresh = ManagementFormControls.CreateButton("Tải lại");
-            refresh.Click += (_, _) => { txtSearch.Clear(); LoadData(); ClearFields(); };
-            toolbar.Controls.Add(refresh);
-            var add = ManagementFormControls.CreateButton("Thêm");
-            add.Click += Add_Click;
-            toolbar.Controls.Add(add);
-            var update = ManagementFormControls.CreateButton("Cập nhật");
-            update.Click += Update_Click;
-            toolbar.Controls.Add(update);
-            var delete = ManagementFormControls.CreateButton("Xóa");
-            delete.Click += Delete_Click;
-            toolbar.Controls.Add(delete);
-            var clear = ManagementFormControls.CreateButton("Làm mới form");
-            clear.Click += (_, _) => ClearFields();
-            toolbar.Controls.Add(clear);
-
-            var editor = ManagementFormControls.CreateToolbar();
-            editor.Controls.Add(ManagementFormControls.CreateField("Mã danh mục *", txtId, 180));
-            editor.Controls.Add(ManagementFormControls.CreateField("Tên danh mục *", txtName, 260));
-            editor.Controls.Add(ManagementFormControls.CreateField("Mô tả", txtDescription, 400));
-            var root = ManagementFormControls.CreateRoot();
-            root.Controls.Add(toolbar, 0, 0);
-            root.Controls.Add(editor, 0, 1);
-            root.Controls.Add(grid, 0, 2);
-            Controls.Add(root);
+            LoadData();
         }
+
+        private void BtnTimKiem_Click(object? sender, EventArgs e) => LoadData(txtSearch.Text);
+
+        private void BtnTaiLai_Click(object? sender, EventArgs e)
+        {
+            txtSearch.Clear();
+            LoadData();
+            ClearFields();
+        }
+
+        private void BtnLamMoi_Click(object? sender, EventArgs e) => ClearFields();
 
         private void LoadData(string keyword = "")
         {
             try
             {
                 grid.DataSource = service.Search(keyword);
-                ManagementFormControls.SetColumnHeader(grid, nameof(DanhMucDTO.MaDanhMuc), "Mã danh mục");
-                ManagementFormControls.SetColumnHeader(grid, nameof(DanhMucDTO.TenDanhMuc), "Tên danh mục");
-                ManagementFormControls.SetColumnHeader(grid, nameof(DanhMucDTO.MoTa), "Mô tả");
+                SetColumnHeader(nameof(DanhMucDTO.MaDanhMuc), "Mã danh mục");
+                SetColumnHeader(nameof(DanhMucDTO.TenDanhMuc), "Tên danh mục");
+                SetColumnHeader(nameof(DanhMucDTO.MoTa), "Mô tả");
                 grid.ClearSelection();
             }
             catch (Exception ex) { ShowError(ex); }
+        }
+
+        private void SetColumnHeader(string property, string title)
+        {
+            if (grid.Columns[property] is DataGridViewColumn col)
+                col.HeaderText = title;
         }
 
         private DanhMucDTO BuildItem() => new()
@@ -151,5 +135,6 @@ namespace ComputerStore.GUI.Forms.Products
         {
             MessageBox.Show(this, ex.Message, "Lỗi quản lý danh mục", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+        */
     }
 }

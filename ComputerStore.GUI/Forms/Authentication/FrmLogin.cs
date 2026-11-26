@@ -5,8 +5,6 @@ namespace ComputerStore.GUI.Forms.Authentication
 {
     public partial class FrmLogin : Form
     {
-        private readonly TaiKhoanBLL taiKhoanBLL = new TaiKhoanBLL();
-
         public TaiKhoanDTO? LoggedInAccount { get; private set; }
         public NhanVienDTO? LoggedInEmployee { get; private set; }
 
@@ -14,6 +12,19 @@ namespace ComputerStore.GUI.Forms.Authentication
         {
             InitializeComponent();
         }
+
+        /* =====================================================================
+         * HƯỚNG DẪN NỐI LẠI SAU KHI KÉO THẢ UI (Visual Studio Designer):
+         * Đặt thuộc tính (Name) cho các control như sau, gán sự kiện tương ứng
+         * rồi bỏ comment khối code bên dưới:
+         *   - TextBox  : txtTenDangNhap, txtMatKhau (UseSystemPasswordChar = true)
+         *   - CheckBox : chkHienMatKhau  -> CheckedChanged: chkHienMatKhau_CheckedChanged
+         *   - Button   : btnDangNhap     -> Click: btnDangNhap_Click
+         *   - Button   : btnThoat        -> Click: btnThoat_Click
+         *   - Form     : FrmLogin        -> Load: FrmLogin_Load
+         * =====================================================================
+
+        private readonly TaiKhoanBLL taiKhoanBLL = new TaiKhoanBLL();
 
         private void FrmLogin_Load(object? sender, EventArgs e)
         {
@@ -61,5 +72,6 @@ namespace ComputerStore.GUI.Forms.Authentication
             DialogResult = DialogResult.Cancel;
             Close();
         }
+        */
     }
 }
