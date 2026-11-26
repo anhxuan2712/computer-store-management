@@ -22,6 +22,10 @@ namespace ComputerStore.GUI.Forms.Transactions
             cboNhaCungCap = new ComboBox();
             lblGhiChu = new Label();
             txtGhiChu = new TextBox();
+            lblNhanVien = new Label();
+            txtNhanVien = new TextBox();
+            lblNgayLap = new Label();
+            txtNgayLap = new TextBox();
             grpSanPham = new GroupBox();
             lblSanPham = new Label();
             cboSanPham = new ComboBox();
@@ -50,9 +54,13 @@ namespace ComputerStore.GUI.Forms.Transactions
             grpPhieu.Controls.Add(cboNhaCungCap);
             grpPhieu.Controls.Add(lblGhiChu);
             grpPhieu.Controls.Add(txtGhiChu);
+            grpPhieu.Controls.Add(lblNhanVien);
+            grpPhieu.Controls.Add(txtNhanVien);
+            grpPhieu.Controls.Add(lblNgayLap);
+            grpPhieu.Controls.Add(txtNgayLap);
             grpPhieu.Location = new Point(12, 12);
             grpPhieu.Name = "grpPhieu";
-            grpPhieu.Size = new Size(860, 65);
+            grpPhieu.Size = new Size(860, 100);
             grpPhieu.TabIndex = 0;
             grpPhieu.TabStop = false;
             grpPhieu.Text = "Thông tin phiếu nhập";
@@ -87,6 +95,36 @@ namespace ComputerStore.GUI.Forms.Transactions
             txtGhiChu.Size = new Size(325, 23);
             txtGhiChu.TabIndex = 2;
             //
+            // lblNhanVien
+            //
+            lblNhanVien.AutoSize = true;
+            lblNhanVien.Location = new Point(15, 65);
+            lblNhanVien.Name = "lblNhanVien";
+            lblNhanVien.Text = "Nhân viên:";
+            //
+            // txtNhanVien
+            //
+            txtNhanVien.Location = new Point(110, 62);
+            txtNhanVien.Name = "txtNhanVien";
+            txtNhanVien.ReadOnly = true;
+            txtNhanVien.Size = new Size(320, 23);
+            txtNhanVien.TabStop = false;
+            //
+            // lblNgayLap
+            //
+            lblNgayLap.AutoSize = true;
+            lblNgayLap.Location = new Point(455, 65);
+            lblNgayLap.Name = "lblNgayLap";
+            lblNgayLap.Text = "Ngày lập:";
+            //
+            // txtNgayLap
+            //
+            txtNgayLap.Location = new Point(515, 62);
+            txtNgayLap.Name = "txtNgayLap";
+            txtNgayLap.ReadOnly = true;
+            txtNgayLap.Size = new Size(325, 23);
+            txtNgayLap.TabStop = false;
+            //
             // grpSanPham
             //
             grpSanPham.Controls.Add(lblSanPham);
@@ -98,7 +136,7 @@ namespace ComputerStore.GUI.Forms.Transactions
             grpSanPham.Controls.Add(numDonGia);
             grpSanPham.Controls.Add(btnThemSP);
             grpSanPham.Controls.Add(btnXoaSP);
-            grpSanPham.Location = new Point(12, 85);
+            grpSanPham.Location = new Point(12, 120);
             grpSanPham.Name = "grpSanPham";
             grpSanPham.Size = new Size(860, 100);
             grpSanPham.TabIndex = 3;
@@ -189,13 +227,13 @@ namespace ComputerStore.GUI.Forms.Transactions
             dgvChiTiet.AllowUserToDeleteRows = false;
             dgvChiTiet.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dgvChiTiet.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvChiTiet.Location = new Point(12, 195);
+            dgvChiTiet.Location = new Point(12, 230);
             dgvChiTiet.MultiSelect = false;
             dgvChiTiet.Name = "dgvChiTiet";
             dgvChiTiet.ReadOnly = true;
             dgvChiTiet.RowHeadersVisible = false;
             dgvChiTiet.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvChiTiet.Size = new Size(860, 300);
+            dgvChiTiet.Size = new Size(860, 265);
             dgvChiTiet.TabIndex = 9;
             //
             // lblTongTienText
@@ -274,6 +312,10 @@ namespace ComputerStore.GUI.Forms.Transactions
         private ComboBox cboNhaCungCap;
         private Label lblGhiChu;
         private TextBox txtGhiChu;
+        private Label lblNhanVien;
+        private TextBox txtNhanVien;
+        private Label lblNgayLap;
+        private TextBox txtNgayLap;
         private GroupBox grpSanPham;
         private Label lblSanPham;
         private ComboBox cboSanPham;

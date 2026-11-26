@@ -19,6 +19,13 @@ namespace ComputerStore.GUI.Forms.Transactions
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int MaNhanVien { get; set; } = 1;
 
+        /// <summary>Họ tên nhân viên đăng nhập, chỉ dùng để hiển thị.</summary>
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string? TenNhanVien { get; set; }
+
+        private const string DinhDangNgayLap = "dd/MM/yyyy HH:mm";
+
         public FrmBanHang()
         {
             InitializeComponent();
@@ -32,7 +39,20 @@ namespace ComputerStore.GUI.Forms.Transactions
             dgvGioHang.Columns.Add(CreateColumn("SoLuong", "Số lượng", 12));
             dgvGioHang.Columns.Add(CreateColumn("DonGia", "Đơn giá", 16, "N0"));
             dgvGioHang.Columns.Add(CreateColumn("ThanhTien", "Thành tiền", 17, "N0"));
+            // Cột Ngày lập không gắn với model: giá trị lấy từ ô Ngày lập của hóa đơn (CellFormatting).
+            dgvGioHang.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "NgayLap",
+                HeaderText = "Ngày lập",
+                FillWeight = 18
+            });
+            dgvGioHang.CellFormatting += dgvGioHang_CellFormatting;
             dgvGioHang.DataSource = gioHang;
+
+            txtNhanVien.Text = string.IsNullOrWhiteSpace(TenNhanVien)
+                ? $"Mã NV: {MaNhanVien}"
+                : $"Mã NV: {MaNhanVien} - {TenNhanVien}";
+            txtNgayLap.Text = DateTime.Now.ToString(DinhDangNgayLap);
 
             LoadKhachHang();
             LoadSanPham();
@@ -53,6 +73,15 @@ namespace ComputerStore.GUI.Forms.Transactions
                 col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             }
             return col;
+        }
+
+        private void dgvGioHang_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex >= 0 && dgvGioHang.Columns[e.ColumnIndex].Name == "NgayLap")
+            {
+                e.Value = txtNgayLap.Text;
+                e.FormattingApplied = true;
+            }
         }
 
         /// <summary>Mã khách hàng đang chọn; null nếu là khách lẻ.</summary>
@@ -175,8 +204,12 @@ namespace ComputerStore.GUI.Forms.Transactions
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
+            // Ngày lập lấy đúng lúc thanh toán, hiển thị và lưu cùng một giá trị.
+            DateTime ngayLap = DateTime.Now;
+            txtNgayLap.Text = ngayLap.ToString(DinhDangNgayLap);
+
             if (bll.ThanhToan(MaKhachHangDangChon(), MaNhanVien, numTienKhachDua.Value, txtGhiChu.Text,
-                    gioHang, out string message))
+                    gioHang, out string message, ngayLap))
             {
                 MessageBox.Show(message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ResetHoaDon();
@@ -205,6 +238,7 @@ namespace ComputerStore.GUI.Forms.Transactions
             cboSanPham.SelectedIndex = -1;
             numSoLuong.Value = 1;
             numTienKhachDua.Value = 0;
+            txtNgayLap.Text = DateTime.Now.ToString(DinhDangNgayLap);
             CapNhatTongTien();
         }
 

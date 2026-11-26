@@ -78,7 +78,7 @@ namespace ComputerStore.BLL.Services
         // maKhachHang = null nghia la khach le.
         // Tien khach dua chi dung de kiem tra va tinh tien thoi, khong luu vao DB.
         public bool ThanhToan(int? maKhachHang, int maNhanVien, decimal tienKhachDua, string? ghiChu,
-            IList<DongChiTietModel> gioHang, out string message)
+            IList<DongChiTietModel> gioHang, out string message, DateTime? ngayLap = null)
         {
             if (maNhanVien <= 0)
             {
@@ -110,7 +110,7 @@ namespace ComputerStore.BLL.Services
             {
                 MaKhachHang = maKhachHang > 0 ? maKhachHang : null,
                 MaNhanVien = maNhanVien,
-                NgayLap = DateTime.Now,
+                NgayLap = ngayLap ?? DateTime.Now,
                 TongTien = tongTien,
                 TrangThai = "DaThanhToan",
                 GhiChu = string.IsNullOrWhiteSpace(ghiChu) ? null! : ghiChu.Trim()

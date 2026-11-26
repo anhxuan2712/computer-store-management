@@ -76,7 +76,7 @@ namespace ComputerStore.BLL.Services
 
         // 4. XAC NHAN PHIEU NHAP: LUU PHIEU, CHI TIET VA TANG TON KHO
         public bool XacNhanNhap(int maNhaCungCap, int maNhanVien, string? ghiChu,
-            IList<DongChiTietModel> chiTiet, out string message)
+            IList<DongChiTietModel> chiTiet, out string message, DateTime? ngayNhap = null)
         {
             if (maNhaCungCap <= 0)
             {
@@ -106,7 +106,7 @@ namespace ComputerStore.BLL.Services
             {
                 MaNhaCungCap = maNhaCungCap,
                 MaNhanVien = maNhanVien,
-                NgayNhap = DateTime.Now,
+                NgayNhap = ngayNhap ?? DateTime.Now,
                 TongTien = TinhTongTien(chiTiet),
                 TrangThai = "DaXacNhan",
                 GhiChu = string.IsNullOrWhiteSpace(ghiChu) ? null! : ghiChu.Trim()

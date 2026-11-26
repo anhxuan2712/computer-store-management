@@ -18,6 +18,13 @@ namespace ComputerStore.GUI.Forms.Transactions
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int MaNhanVien { get; set; } = 1;
 
+        /// <summary>Họ tên nhân viên đăng nhập, chỉ dùng để hiển thị.</summary>
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string? TenNhanVien { get; set; }
+
+        private const string DinhDangNgayLap = "dd/MM/yyyy HH:mm";
+
         public FrmNhapHang()
         {
             InitializeComponent();
@@ -31,9 +38,31 @@ namespace ComputerStore.GUI.Forms.Transactions
             dgvChiTiet.Columns.Add(CreateColumn("SoLuong", "Số lượng", 12));
             dgvChiTiet.Columns.Add(CreateColumn("DonGia", "Đơn giá nhập", 16, "N0"));
             dgvChiTiet.Columns.Add(CreateColumn("ThanhTien", "Thành tiền", 17, "N0"));
+            // Cột Ngày lập không gắn với model: giá trị lấy từ ô Ngày lập của phiếu (CellFormatting).
+            dgvChiTiet.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "NgayLap",
+                HeaderText = "Ngày lập",
+                FillWeight = 18
+            });
+            dgvChiTiet.CellFormatting += dgvChiTiet_CellFormatting;
             dgvChiTiet.DataSource = chiTiet;
 
+            txtNhanVien.Text = string.IsNullOrWhiteSpace(TenNhanVien)
+                ? $"Mã NV: {MaNhanVien}"
+                : $"Mã NV: {MaNhanVien} - {TenNhanVien}";
+            txtNgayLap.Text = DateTime.Now.ToString(DinhDangNgayLap);
+
             LoadDanhMuc();
+        }
+
+        private void dgvChiTiet_CellFormatting(object? sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex >= 0 && dgvChiTiet.Columns[e.ColumnIndex].Name == "NgayLap")
+            {
+                e.Value = txtNgayLap.Text;
+                e.FormattingApplied = true;
+            }
         }
 
         private static DataGridViewTextBoxColumn CreateColumn(string property, string header, int weight, string? format = null)
@@ -135,7 +164,11 @@ namespace ComputerStore.GUI.Forms.Transactions
                     "Xác nhận phiếu nhập", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
-            if (bll.XacNhanNhap(maNhaCungCap, MaNhanVien, txtGhiChu.Text, chiTiet, out string message))
+            // Ngày lập lấy đúng lúc xác nhận, hiển thị và lưu cùng một giá trị.
+            DateTime ngayLap = DateTime.Now;
+            txtNgayLap.Text = ngayLap.ToString(DinhDangNgayLap);
+
+            if (bll.XacNhanNhap(maNhaCungCap, MaNhanVien, txtGhiChu.Text, chiTiet, out string message, ngayLap))
             {
                 MessageBox.Show(message, "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 ResetPhieu();
@@ -164,6 +197,7 @@ namespace ComputerStore.GUI.Forms.Transactions
             cboSanPham.SelectedIndex = -1;
             numSoLuong.Value = 1;
             numDonGia.Value = 0;
+            txtNgayLap.Text = DateTime.Now.ToString(DinhDangNgayLap);
             CapNhatTongTien();
         }
 

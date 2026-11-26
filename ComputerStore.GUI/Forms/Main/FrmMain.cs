@@ -101,13 +101,21 @@ namespace ComputerStore.GUI.Forms.Main
 
         private void btnBanHang_Click(object? sender, EventArgs e)
         {
-            var frm = new FrmBanHang { MaNhanVien = currentAccount.MaNhanVien };
+            var frm = new FrmBanHang
+            {
+                MaNhanVien = currentAccount.MaNhanVien,
+                TenNhanVien = currentEmployee?.HoTen
+            };
             OpenChildForm(frm, btnBanHang, "Bán hàng");
         }
 
         private void btnNhapHang_Click(object? sender, EventArgs e)
         {
-            var frm = new FrmNhapHang { MaNhanVien = currentAccount.MaNhanVien };
+            var frm = new FrmNhapHang
+            {
+                MaNhanVien = currentAccount.MaNhanVien,
+                TenNhanVien = currentEmployee?.HoTen
+            };
             OpenChildForm(frm, btnNhapHang, "Nhập hàng");
         }
 
